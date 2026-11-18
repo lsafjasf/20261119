@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#091015">
+  <meta name="description" content="圆形麦克风阵列声源方位估计器：多通道延迟合成、扫描波束形成、对称性歧义分析与方向增强音频。">
+  <title>AZIMUTH · 圆阵声源方位实验台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%23091015' stroke='%236ee7c8' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%236ee7c8'/%3E%3Ccircle cx='50' cy='32' r='3' fill='%23f2b75c'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="20"></circle>
+          <circle cx="28" cy="28" r="5"></circle>
+          <path d="M28 4v8M28 44v8M4 28h8M44 28h8M11 11l6 6M39 39l6 6M45 11l-6 6M17 39l-6 6"></path>
+        </svg>
+      </div>
+      <div>
+        <p class="eyebrow">ACOUSTIC LAB · UCA-08</p>
+        <h1>AZIMUTH <span>圆阵方位实验台</span></h1>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <div class="run-state">
+        <span class="live-dot"></span>
+        <span id="runStatus">DSP 就绪</span>
+      </div>
+      <div class="topbar-divider"></div>
+      <span id="runTime" class="mono">-- ms</span>
+      <span class="version-pill">v1.0</span>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="control-panel surface">
+      <div class="panel-heading">
+        <div>
+          <p class="section-index">01 / INPUT</p>
+          <h2>实验参数</h2>
+        </div>
+        <span class="micro-chip">SYNTHETIC</span>
+      </div>
+
+      <section class="control-section">
+        <div class="control-label-row">
+          <label>声源场景</label>
+          <span class="hint">远场平面波</span>
+        </div>
+        <div class="segmented" role="group" aria-label="声源场景">
+          <button class="segment is-active" type="button" data-source-mode="single">
+            <span class="segment-dot"></span>单源
+          </button>
+          <button class="segment" type="button" data-source-mode="dual">
+            <span class="segment-dot dual"></span>双源
+          </button>
+        </div>
+      </section>
+
+      <section class="control-section source-control" data-source-index="0">
+        <div class="source-title">
+          <span class="source-swatch source-a"></span>
+          <label for="sourceAAngle">声源 A</label>
+          <span class="source-level">0.72</span>
+        </div>
+        <div class="slider-row">
+          <input id="sourceAAngle" type="range" min="0" max="359" value="37" step="1">
+          <output id="sourceAAngleValue" for="sourceAAngle">37°</output>
+        </div>
+        <div class="range-scale"><span>0°</span><span>90°</span><span>180°</span><span>270°</span><span>359°</span></div>
+      </section>
+
+      <section class="control-section source-control is-hidden" id="sourceBControl" data-source-index="1">
+        <div class="source-title">
+          <span class="source-swatch source-b"></span>
+          <label for="sourceBAngle">声源 B</label>
+          <span class="source-level">0.56</span>
+        </div>
+        <div class="slider-row">
+          <input id="sourceBAngle" type="range" min="0" max="359" value="138" step="1">
+          <output id="sourceBAngleValue" for="sourceBAngle">138°</output>
+        </div>
+        <div class="range-scale"><span>0°</span><span>90°</span><span>180°</span><span>270°</span><span>359°</span></div>
+      </section>
+
+      <section class="control-section">
+        <div class="control-label-row">
+          <label for="reverbEnabled">混响与干扰</label>
+          <label class="switch">
+            <input id="reverbEnabled" type="checkbox" checked>
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+            <span class="sr-only">启用混响与干扰</span>
+          </label>
+        </div>
+        <div class="slider-row compact" id="reverbSliderRow">
+          <input id="reverbAmount" type="range" min="0" max="100" value="38" step="1">
+          <output id="reverbAmountValue" for="reverbAmount">38%</output>
+        </div>
+        <p class="control-note">6 条镜像反射 + 通道非相干底噪</p>
+      </section>
+
+      <section class="control-section array-settings">
+        <div class="control-label-row">
+          <label>阵列与介质</label>
+          <span class="hint" id="apertureLabel">Ø 24 cm</span>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>阵元数</span>
+            <select id="micCount">
+              <option value="6">6</option>
+              <option value="8" selected>8</option>
+              <option value="12">12</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>半径 <b>cm</b></span>
+            <input id="arrayRadius" type="number" value="12" min="6" max="20" step="1">
+          </label>
+          <label class="field">
+            <span>声速 <b>m/s</b></span>
+            <input id="soundSpeed" type="number" value="343" min="300" max="380" step="1">
+          </label>
+          <div class="field field-static">
+            <span>采样率</span>
+            <strong class="mono">16 kHz</strong>
+          </div>
+        </div>
+      </section>
+
+      <button class="primary-action" id="runButton" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.34-5.66M4 4v5h5"></path><path d="M12 8v4l3 2"></path></svg>
+        <span>重新合成并扫描</span>
+        <kbd>R</kbd>
+      </button>
+      <p class="model-note mono">τᵢ = (xᵢ cosθ + yᵢ sinθ) / c</p>
+    </aside>
+
+    <section class="workspace">
+      <div class="metrics-grid" aria-live="polite">
+        <article class="metric-card surface metric-primary">
+          <div class="metric-top">
+            <span class="metric-label">主估计方位</span>
+            <span class="metric-tag">PEAK</span>
+          </div>
+          <div class="metric-value"><span id="estimateAngle">--</span><i>°</i></div>
+          <p class="metric-foot" id="estimateFoot">等待扫描</p>
+          <div class="metric-orbit" aria-hidden="true"><span></span></div>
+        </article>
+        <article class="metric-card surface">
+          <div class="metric-top">
+            <span class="metric-label">角度误差</span>
+            <span class="metric-tag muted" id="errorMode">DIRECT</span>
+          </div>
+          <div class="metric-value small"><span id="angleError">--</span><i>°</i></div>
+          <p class="metric-foot" id="angleErrorFoot">与声源 A 真值比较</p>
+        </article>
+        <article class="metric-card surface">
+          <div class="metric-top">
+            <span class="metric-label">峰值置信度</span>
+            <span class="metric-tag">COHERENCE</span>
+          </div>
+          <div class="metric-value small"><span id="confidenceValue">--</span><i>%</i></div>
+          <div class="mini-meter"><span id="confidenceMeter"></span></div>
+          <p class="metric-foot" id="confidenceFoot">延迟对齐后的通道一致性</p>
+        </article>
+        <article class="metric-card surface">
+          <div class="metric-top">
+            <span class="metric-label">主瓣对比度</span>
+            <span class="metric-tag">CONTRAST</span>
+          </div>
+          <div class="metric-value small"><span id="contrastValue">--</span><i>dB</i></div>
+          <p class="metric-foot" id="contrastFoot">相对扫描背景中位数</p>
+        </article>
+      </div>
+
+      <div class="visual-grid">
+        <article class="polar-card surface">
+          <div class="card-heading">
+            <div>
+              <p class="section-index">02 / RESPONSE</p>
+              <h2>扫描方位响应</h2>
+            </div>
+            <div class="heading-tools">
+              <span class="legend-item truth"><i></i>真值</span>
+              <span class="legend-item peak"><i></i>估计</span>
+              <span class="scan-chip">360° · 2° STEP</span>
+            </div>
+          </div>
+          <div class="polar-stage">
+            <canvas id="polarCanvas" aria-label="360 度方位响应极坐标图"></canvas>
+            <div class="polar-caption">
+              <span>径向刻度</span>
+              <strong class="mono">0 / −10 / −20 / −30 dB</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="peaks-card surface">
+          <div class="card-heading">
+            <div>
+              <p class="section-index">03 / PEAKS</p>
+              <h2>检测峰值</h2>
+            </div>
+            <span class="peak-count" id="peakCount">0 PEAKS</span>
+          </div>
+          <div class="peak-list" id="peakList">
+            <div class="empty-state">运行扫描后显示峰值</div>
+          </div>
+          <div class="peak-hint">
+            <span class="pulse-icon"></span>
+            点击峰值可将其设为方向增强的指向。
+          </div>
+        </article>
+      </div>
+
+      <div class="diagnostics-grid">
+        <article class="mapping-card surface">
+          <div class="card-heading">
+            <div>
+              <p class="section-index">04 / MAPPING</p>
+              <h2>通道与坐标映射</h2>
+            </div>
+            <span class="status-badge is-neutral" id="mappingStatus">等待体检</span>
+          </div>
+          <div class="mapping-body">
+            <div class="array-diagram-wrap">
+              <canvas id="arrayCanvas" aria-label="麦克风阵列坐标图"></canvas>
+              <span class="axis-label axis-x">x</span>
+              <span class="axis-label axis-y">y</span>
+            </div>
+            <div class="mapping-content">
+              <p class="mapping-message" id="mappingMessage">交换通道后，系统会用通道间 TDOA 检查“数据顺序 → 标定坐标”是否仍一致。</p>
+              <details class="coordinate-details">
+                <summary>坐标清单 <span id="coordinateCount">8 CH</span></summary>
+                <div class="coordinate-list" id="coordinateList"></div>
+              </details>
+              <div class="diagnostic-readout">
+                <div><span>拟合残差</span><strong class="mono" id="mappingResidual">--</strong></div>
+                <div><span>推荐映射</span><strong class="mono" id="mappingRecommendation">--</strong></div>
+              </div>
+              <div class="mapping-actions">
+                <button class="secondary-action danger-ghost" id="swapDataButton" type="button">仅交换 CH1 ↔ CH2 数据</button>
+                <button class="secondary-action accent-ghost" id="remapButton" type="button">交换并重映射坐标</button>
+                <button class="icon-button" id="restoreButton" type="button" title="恢复原始通道顺序" aria-label="恢复原始通道顺序">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="symmetry-card surface">
+          <div class="card-heading">
+            <div>
+              <p class="section-index">05 / AMBIGUITY</p>
+              <h2>对称性与歧义</h2>
+            </div>
+            <span class="symmetry-chip" id="symmetryChip">C8</span>
+          </div>
+          <p class="symmetry-lead" id="symmetryLead">均匀圆阵具有旋转与镜像对称性，但固定通道标定后，主瓣仍可唯一定位。</p>
+          <div class="symmetry-diagram" aria-hidden="true">
+            <div class="sym-ring"><span class="sym-mic m1"></span><span class="sym-mic m2"></span><span class="sym-mic m3"></span><span class="sym-mic m4"></span><span class="sym-mic m5"></span><span class="sym-mic m6"></span><span class="sym-mic m7"></span><span class="sym-mic m8"></span><span class="sym-arrow"></span></div>
+            <div class="sym-copy">
+              <div><span>旋转周期</span><b id="rotationPeriod">45°</b></div>
+              <div><span>镜像轴</span><b id="mirrorAxes">4 条</b></div>
+              <div><span>整周歧义</span><b id="globalAmbiguity">坐标框架</b></div>
+            </div>
+          </div>
+          <p class="symmetry-note" id="symmetryNote">若阵列整体旋转而坐标未同步旋转，或忽略 CH 标签，45° 旋转与镜像坐标框架不可区分。算法不会把这种坐标框架等价误报成 N 个同值波束峰。</p>
+        </article>
+      </div>
+
+      <article class="audio-card surface">
+        <div class="card-heading audio-heading">
+          <div>
+            <p class="section-index">06 / LISTEN</p>
+            <h2>方向增强音频对照</h2>
+          </div>
+          <div class="audio-heading-meta">
+            <span class="audio-target">增强指向 <b id="steerAngle">--°</b></span>
+            <span class="scan-chip">16-BIT WAV · MONO</span>
+          </div>
+        </div>
+        <div class="audio-grid">
+          <div class="audio-tile raw-tile">
+            <div class="audio-title-row">
+              <div>
+                <span class="audio-kicker">REFERENCE</span>
+                <h3>原始混合</h3>
+              </div>
+              <span class="audio-rms mono" id="rawRms">RMS --</span>
+            </div>
+            <canvas id="rawWaveCanvas" aria-label="原始混合波形"></canvas>
+            <audio id="rawAudio" controls preload="metadata"></audio>
+            <a class="download-link" id="rawDownload" download="array-raw-mix.wav">下载 WAV <span>↓</span></a>
+          </div>
+          <div class="audio-tile enhanced-tile">
+            <div class="audio-title-row">
+              <div>
+                <span class="audio-kicker">DELAY &amp; SUM</span>
+                <h3>估计方向增强</h3>
+              </div>
+              <span class="audio-rms mono" id="enhancedRms">RMS --</span>
+            </div>
+            <canvas id="enhancedWaveCanvas" aria-label="增强音频波形"></canvas>
+            <audio id="enhancedAudio" controls preload="metadata"></audio>
+            <a class="download-link" id="enhancedDownload" download="array-enhanced.wav">下载 WAV <span>↓</span></a>
+          </div>
+        </div>
+        <p class="audio-footnote">合成信号用于算法对照，不是语音录音。增强器对当前估计/选中的主峰做延迟求和，混响与旁瓣干扰应可听出被压低。</p>
+      </article>
+
+      <footer class="workspace-footer">
+        <span>远场平面波 · 分数延迟插值 · 延迟求和波束形成</span>
+        <span class="mono">N = <b id="footerMicCount">8</b> · c = <b id="footerSoundSpeed">343</b> m/s · fs = 16 kHz</span>
+      </footer>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
