@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="在 Worker 中处理摄像头帧、添加时间戳水印并安全录制。"
+    />
+    <title>带时间戳水印的摄像头录制器</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow">WORKER VIDEO PIPELINE</p>
+          <h1>时间戳摄像头录制器</h1>
+        </div>
+      </div>
+      <div id="capability-badge" class="badge badge-neutral">
+        正在检查浏览器能力
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="stage-card" aria-labelledby="preview-title">
+        <div class="stage-heading">
+          <div>
+            <p class="eyebrow">LIVE / PROCESSED</p>
+            <h2 id="preview-title">处理后的画面</h2>
+          </div>
+          <div id="record-indicator" class="record-indicator" aria-live="polite">
+            <span class="record-dot"></span>
+            <span id="record-state">未录制</span>
+          </div>
+        </div>
+
+        <div class="preview-shell">
+          <video
+            id="preview"
+            class="preview"
+            autoplay
+            muted
+            playsinline
+          ></video>
+          <div id="preview-empty" class="preview-empty">
+            <div class="preview-icon" aria-hidden="true"></div>
+            <p>等待视频源</p>
+            <span>摄像头画面会经 Worker 缩放、加水印后回传</span>
+          </div>
+          <div id="toast" class="toast" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="timer-row">
+          <div>
+            <span class="label">已录制</span>
+            <strong id="recording-time">00:00.0</strong>
+          </div>
+          <div class="source-note" id="source-note">尚未选择视频源</div>
+        </div>
+
+        <div class="primary-actions">
+          <button id="start-camera" class="button button-primary" type="button">
+            授权并开始
+          </button>
+          <button id="pause-resume" class="button button-secondary" type="button" disabled>
+            暂停
+          </button>
+          <button id="stop" class="button button-danger" type="button" disabled>
+            停止并保存
+          </button>
+        </div>
+
+        <div id="alert-panel" class="alert-panel" role="alert" hidden></div>
+      </section>
+
+      <aside class="side-column">
+        <section class="panel" aria-labelledby="controls-title">
+          <div class="panel-title-row">
+            <div>
+              <p class="eyebrow">PIPELINE</p>
+              <h2 id="controls-title">处理参数</h2>
+            </div>
+            <span class="live-tag">实时生效</span>
+          </div>
+
+          <label class="control" for="scale">
+            <span class="control-label">
+              <span>分辨率缩放</span>
+              <output id="scale-value" for="scale">100%</output>
+            </span>
+            <input id="scale" type="range" min="25" max="200" step="5" value="100" />
+            <span class="control-hint">宽高保持偶数，用最近一帧处理</span>
+          </label>
+
+          <label class="control" for="delay">
+            <span class="control-label">
+              <span>模拟处理延迟</span>
+              <output id="delay-value" for="delay">120 ms</output>
+            </span>
+            <input id="delay" type="range" min="0" max="1000" step="20" value="120" />
+            <span class="control-hint">
+              有界队列最多保留 2 帧，积压时丢弃最旧帧
+            </span>
+          </label>
+
+          <dl class="metrics" aria-label="管线指标">
+            <div>
+              <dt>已处理</dt>
+              <dd id="metric-processed">0</dd>
+            </div>
+            <div>
+              <dt>丢弃</dt>
+              <dd id="metric-dropped">0</dd>
+            </div>
+            <div>
+              <dt>队列</dt>
+              <dd id="metric-queue">0 / 2</dd>
+            </div>
+            <div>
+              <dt>时间戳</dt>
+              <dd id="metric-timestamp">等待帧</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="panel" aria-labelledby="recovery-title">
+          <div class="panel-title-row">
+            <div>
+              <p class="eyebrow">INDEXEDDB</p>
+              <h2 id="recovery-title">录制恢复</h2>
+            </div>
+            <span id="recovery-status" class="status-chip">检查中</span>
+          </div>
+          <div id="recovery-content" class="recovery-content">
+            <p class="muted">正在检查本机已保存的录制片段…</p>
+          </div>
+        </section>
+
+        <section class="panel panel-test" aria-labelledby="test-title">
+          <div class="panel-title-row">
+            <div>
+              <p class="eyebrow">AUTOMATED CHECK</p>
+              <h2 id="test-title">模拟源验证</h2>
+            </div>
+          </div>
+          <p class="panel-copy">
+            用页面生成的动态画面与音频运行同一条 Worker 管线，不需要摄像头权限。
+          </p>
+          <button id="run-selftest" class="button button-quiet" type="button">
+            启动模拟源自检
+          </button>
+          <div id="selftest-result" class="selftest-result" hidden></div>
+        </section>
+      </aside>
+    </main>
+
+    <section id="validation-section" class="validation-section" hidden aria-labelledby="validation-title">
+      <div class="validation-heading">
+        <div>
+          <p class="eyebrow">DOWNLOAD GATE</p>
+          <h2 id="validation-title">文件校验报告</h2>
+        </div>
+        <span id="validation-badge" class="badge badge-neutral">尚未校验</span>
+      </div>
+      <div id="validation-report" class="validation-report"></div>
+    </section>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
