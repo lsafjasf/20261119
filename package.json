@@ -1,0 +1,15 @@
+{
+  "name": "webcodecs-bounded-decode-queue",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bounded WebCodecs output buffering with dependency-safe frame dropping and lifecycle metrics.",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "stress": "node scripts/stress.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
