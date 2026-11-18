@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ima-adpcm-blocks"
+version = "1.0.0"
+description = "IMA ADPCM codec with explicit random-access block framing"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.scripts]
+ima-adpcm = "ima_adpcm.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["ima_adpcm*"]
