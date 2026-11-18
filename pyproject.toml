@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "continuous-varispeed"
+version = "0.1.0"
+description = "Pitch-preserving 0.5x-2.0x time stretching with continuous phase propagation"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=2.0",
+  "soundfile>=0.12",
+  "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+varispeed = "varispeed.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["varispeed*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
