@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>SWEEP / INV — 扫频逆滤波分析器</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c1b1d'/%3E%3Cpath d='M4 17c2-10 4 10 6 0s4-10 6 0 4 10 6 0 4-10 6-10' fill='none' stroke='%235eead4' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Sweep Inv 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 44 44" role="img">
+            <path d="M6 24c3-15 6 15 9 0s6-15 9 0 6 15 9 0 5-15 5-15"/>
+          </svg>
+        </span>
+        <span>
+          <span class="brand-name">SWEEP / INV</span>
+          <span class="brand-sub">去卷积测量工作台</span>
+        </span>
+      </a>
+      <div class="topbar-meta">
+        <span class="status-pill"><i class="status-dot"></i><span id="engineStatus">分析完成</span></span>
+        <span class="meta-chip">48 kHz</span>
+        <span class="meta-chip">LOCAL DSP</span>
+        <span class="meta-chip mono">v1.0</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="control-panel">
+        <div class="control-intro">
+          <p class="eyebrow">SIMULATION SETUP</p>
+          <h1>从扫频中<br><em>剥离房间</em>与失真</h1>
+          <p class="intro-copy">已知 FIR、可调二次非线性与匹配逆滤波，在一个可复核的离线链路里同时观察线性响应与谐波影像。</p>
+        </div>
+
+        <form id="analyzerForm">
+          <section class="control-section">
+            <div class="section-heading">
+              <span class="section-index">01</span>
+              <div>
+                <h2>激励扫频</h2>
+                <p>Exponential sine sweep</p>
+              </div>
+            </div>
+            <label class="field">
+              <span class="field-label"><span>起始频率 f₁</span><output id="f1Output">80 Hz</output></span>
+              <input id="f1Input" name="f1" type="range" min="40" max="400" step="10" value="80">
+              <span class="range-scale"><span>40</span><span>400 Hz</span></span>
+            </label>
+            <label class="field">
+              <span class="field-label"><span>终止频率 f₂</span><output id="f2Output">20.0 kHz</output></span>
+              <input id="f2Input" name="f2" type="range" min="4000" max="22000" step="500" value="20000">
+              <span class="range-scale"><span>4</span><span>22 kHz</span></span>
+            </label>
+            <label class="field">
+              <span class="field-label"><span>扫频时长 T</span><output id="durationOutput">1.20 s</output></span>
+              <input id="durationInput" name="duration" type="range" min="0.6" max="2.4" step="0.1" value="1.2">
+              <span class="range-scale"><span>0.6</span><span>2.4 s</span></span>
+            </label>
+            <div class="readout-strip">
+              <span>时宽带宽积</span>
+              <strong id="tbpOutput">9.55 oct</strong>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-heading">
+              <span class="section-index">02</span>
+              <div>
+                <h2>已知 FIR</h2>
+                <p>Ground-truth room</p>
+              </div>
+            </div>
+            <label class="field select-field">
+              <span class="field-label"><span>空间预设</span><span class="mini-label" id="tapCountLabel">已知抽头</span></span>
+              <select id="presetInput" name="presetId">
+                <option value="studio">近场监听室</option>
+                <option value="hall">小型混响厅</option>
+              </select>
+            </label>
+            <div id="tapList" class="tap-list" aria-label="已知 FIR 抽头"></div>
+            <div class="fir-summary">
+              <div><span>直达时延</span><strong id="directDelayOutput">5.50 ms</strong></div>
+              <div><span>响应跨度</span><strong id="firSpanOutput">62.0 ms</strong></div>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-heading">
+              <span class="section-index">03</span>
+              <div>
+                <h2>二次非线性</h2>
+                <p>Quadratic source term</p>
+              </div>
+            </div>
+            <label class="toggle-row">
+              <span>
+                <strong>启用非线性</strong>
+                <small>y(t) = x(t) + k₂x²(t)</small>
+              </span>
+              <input id="nonlinearInput" name="nonlinear" type="checkbox" checked>
+              <span class="switch" aria-hidden="true"></span>
+            </label>
+            <label class="field" id="k2Field">
+              <span class="field-label"><span>二次项系数 k₂</span><output id="k2Output">0.080</output></span>
+              <input id="k2Input" name="k2" type="range" min="0" max="0.2" step="0.005" value="0.08">
+              <span class="range-scale"><span>0</span><span>0.20</span></span>
+            </label>
+            <p class="control-note">非线性位于声源侧，谐波再经过同一 FIR；逆滤波后 H₂ 会整体提前，而不是叠进主峰。</p>
+          </section>
+
+          <button class="analyze-button" id="analyzeButton" type="submit">
+            <span>重新运行分析</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
+          </button>
+        </form>
+
+        <div class="control-footer">
+          <span>离线仿真</span>
+          <span class="mono">FFT <b id="fftSizeOutput">—</b></span>
+          <span class="mono" id="analysisTimeOutput">— ms</span>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section class="kpi-grid" aria-label="关键测量结果">
+          <article class="kpi-card kpi-accent">
+            <span class="kpi-label">峰时延误差</span>
+            <strong class="kpi-value" id="delayErrorKpi">+0.000 <small>ms</small></strong>
+            <span class="kpi-foot" id="delayFoot">真值 — / 恢复 —</span>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-label">幅频 RMS 误差</span>
+            <strong class="kpi-value" id="magnitudeKpi">1.66 <small>dB</small></strong>
+            <span class="kpi-foot" id="magnitudeFoot">1/12 oct · —</span>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-label">H₂ 能量</span>
+            <strong class="kpi-value warm" id="h2Kpi">−28.0 <small>dB</small></strong>
+            <span class="kpi-foot" id="h2Foot">相对 H₁ · 分离窗 —</span>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-label">主窗泄漏</span>
+            <strong class="kpi-value" id="leakKpi">−33.5 <small>dB</small></strong>
+            <span class="kpi-foot" id="leakFoot">峰值串扰 · 余量 —</span>
+          </article>
+        </section>
+
+        <section class="signal-grid">
+          <article class="panel signal-card">
+            <header class="panel-heading compact">
+              <div>
+                <p class="eyebrow">EXCITATION</p>
+                <h2>原始对数扫频</h2>
+              </div>
+              <span class="tag">x[n]</span>
+            </header>
+            <div class="canvas-wrap sweep-wrap"><canvas id="sweepCanvas"></canvas></div>
+            <footer class="signal-meta">
+              <span id="sweepMeta">80 Hz → 20 kHz</span>
+              <span class="mono" id="sweepLengthMeta">— samples</span>
+            </footer>
+          </article>
+
+          <article class="panel signal-card">
+            <header class="panel-heading compact">
+              <div>
+                <p class="eyebrow">MATCHED INVERSE</p>
+                <h2>逆滤波器</h2>
+              </div>
+              <span class="tag tag-warm">q[n]</span>
+            </header>
+            <div class="canvas-wrap sweep-wrap"><canvas id="inverseCanvas"></canvas></div>
+            <footer class="signal-meta">
+              <span>时间反转 + 6 dB/oct 补偿</span>
+              <span class="mono" id="inverseLengthMeta">— samples</span>
+            </footer>
+          </article>
+        </section>
+
+        <section class="panel ir-panel">
+          <header class="panel-heading">
+            <div>
+              <p class="eyebrow">DECONVOLVED DOMAIN</p>
+              <h2>逆滤波脉冲响应</h2>
+            </div>
+            <div class="panel-tools">
+              <span class="peak-badge"><i></i>卷积峰 <strong id="peakBadge">+5.500 ms</strong></span>
+              <span class="tag" id="windowStateTag">可分离</span>
+            </div>
+          </header>
+          <div class="ir-canvas-wrap"><canvas id="irCanvas"></canvas></div>
+          <footer class="chart-legend">
+            <span><i class="legend-line legend-main"></i>测量 IR</span>
+            <span><i class="legend-line legend-h2-line"></i>H₂ 分量</span>
+            <span><i class="legend-line legend-reference"></i>纯线性参考</span>
+            <span><i class="legend-block legend-room"></i>房间门控</span>
+            <span><i class="legend-block legend-h2"></i>H₂ 分离窗</span>
+            <span class="legend-spacer"></span>
+            <span id="irRangeMeta">窗口 —</span>
+          </footer>
+        </section>
+
+        <section class="analysis-grid">
+          <article class="panel response-panel">
+            <header class="panel-heading compact">
+              <div>
+                <p class="eyebrow">TRANSFER FUNCTION</p>
+                <h2>幅频响应对照</h2>
+              </div>
+              <span class="tag">1/12 oct</span>
+            </header>
+            <div class="response-canvas-wrap"><canvas id="responseCanvas"></canvas></div>
+            <footer class="chart-legend">
+              <span><i class="legend-line legend-truth"></i>真实 FIR</span>
+              <span><i class="legend-line legend-recovered"></i>恢复 H₁</span>
+              <span class="legend-spacer"></span>
+              <span id="errorBandMeta">误差 —</span>
+            </footer>
+          </article>
+
+          <article class="panel separation-panel">
+            <header class="panel-heading compact">
+              <div>
+                <p class="eyebrow">ORDER DOMAIN</p>
+                <h2>各阶能量与分离</h2>
+              </div>
+              <span class="tag tag-warm">H₂</span>
+            </header>
+            <div class="energy-stack" aria-label="各阶能量柱">
+              <div class="energy-row">
+                <div class="energy-label"><span>H₁</span><small>线性 / 房间</small></div>
+                <div class="energy-track"><i id="h1Bar" class="energy-fill h1-fill"></i></div>
+                <strong id="h1EnergyValue">0.0 dB</strong>
+              </div>
+              <div class="energy-row">
+                <div class="energy-label"><span>H₂</span><small>二次谐波</small></div>
+                <div class="energy-track"><i id="h2Bar" class="energy-fill h2-fill"></i></div>
+                <strong id="h2EnergyValue">—</strong>
+              </div>
+            </div>
+            <div class="window-table">
+              <div class="window-row window-head">
+                <span>门控</span><span>范围</span><span>能量 / 泄漏</span>
+              </div>
+              <div class="window-row">
+                <span><i class="dot dot-room"></i>H₁ 房间</span>
+                <span id="roomWindowRange">—</span>
+                <span id="roomWindowEnergy">—</span>
+              </div>
+              <div class="window-row">
+                <span><i class="dot dot-h2"></i>H₂ 谐波</span>
+                <span id="h2WindowRange">—</span>
+                <span id="h2WindowEnergy">—</span>
+              </div>
+            </div>
+            <div class="leak-row">
+              <span>H₂ → 主窗泄漏</span>
+              <strong id="leakDetail">—</strong>
+            </div>
+            <div class="leak-row">
+              <span>线性 → H₂ 窗泄漏</span>
+              <strong id="linearLeakDetail">—</strong>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="busy-overlay" id="busyOverlay" hidden>
+    <div class="busy-card">
+      <span class="spinner"></span>
+      <strong>正在完成 FFT 卷积</strong>
+      <small>扫频 → 非线性 → FIR → 逆滤波</small>
+    </div>
+  </div>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>

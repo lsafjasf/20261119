@@ -1,0 +1,11 @@
+{
+  "name": "sweep-inverse-analyzer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Log-sweep inverse filtering analyzer with harmonic separation",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.js"
+  }
+}
