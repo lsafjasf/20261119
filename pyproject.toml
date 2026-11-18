@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mp4-faststart"
+version = "0.1.0"
+description = "Streaming fast-start relocation for non-fragmented MP4 files"
+requires-python = ">=3.10"
+
+[project.scripts]
+mp4-faststart = "mp4faststart.cli:faststart_main"
+mp4-verify-samples = "mp4faststart.cli:verify_main"
+
+[tool.setuptools]
+packages = ["mp4faststart"]
