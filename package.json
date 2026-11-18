@@ -1,0 +1,19 @@
+{
+  "name": "videoframe-ownership-tracer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VideoFrame ownership tracker with lifecycle visualization and leak diagnostics",
+  "scripts": {
+    "start": "node scripts/build-report.js && node scripts/serve.js",
+    "dev": "node scripts/build-report.js && node scripts/serve.js",
+    "demo": "node scripts/build-report.js",
+    "test": "node --test",
+    "test:leak": "node --expose-gc --test test/leak.test.js",
+    "verify": "npm test && npm run test:leak && npm run demo",
+    "serve": "node scripts/serve.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
