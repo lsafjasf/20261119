@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lpc-speech-lab"
+version = "0.1.0"
+description = "Dependency-free LPC speech coding laboratory"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+lpc-lab = "lpc_lab.cli:main"
+
+[tool.setuptools]
+packages = ["lpc_lab"]
+
+[tool.setuptools.package-data]
+lpc_lab = ["templates/*.html", "templates/*.css", "templates/*.js"]

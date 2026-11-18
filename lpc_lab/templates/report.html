@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LPC 语音编码实验室</title>
+  <style>{{CSS}}</style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <h1>LPC <span>语音编码</span>实验室</h1>
+        <p>逐帧从 PCM 估计线性预测系数，观察自相关矩阵、预测误差与极点；再把量化系数和残差交给独立解码器重建。切换信号、阶数和分析窗长即可对照误差与码量。</p>
+      </div>
+      <div class="hero-meta">
+        <strong>PCM → LPC → RES → PCM</strong>
+        <span id="generated-at">{{GENERATED}}</span>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="实验参数">
+      <div class="control">
+        <label for="signal-select">测试信号</label>
+        <select id="signal-select"></select>
+      </div>
+      <div class="control">
+        <label for="window-select">窗长（样本）</label>
+        <select id="window-select"></select>
+      </div>
+      <div class="control">
+        <label for="order-select">LPC 阶数</label>
+        <select id="order-select"></select>
+      </div>
+      <div class="control-note"><span id="config-note">帧长 400 样本 · 16 kHz · 汉宁窗</span><br>反射系数 <span id="coef-bits-note">8</span> bit · 残差 <span id="residual-bits-note">8</span> bit / 样本</div>
+    </section>
+
+    <section class="stats" aria-label="当前组合指标">
+      <div class="stat"><span class="label">重建 SNR</span><span class="value" id="stat-snr">—</span></div>
+      <div class="stat"><span class="label">重建 MSE</span><span class="value" id="stat-mse">—</span></div>
+      <div class="stat"><span class="label">总码率</span><span class="value" id="stat-rate">—</span></div>
+      <div class="stat"><span class="label">相对 16-bit PCM</span><span class="value" id="stat-ratio">—</span></div>
+      <div class="stat"><span class="label">最大量化极点</span><span class="value" id="stat-pole">—</span></div>
+      <div class="stat"><span class="label">稳定帧</span><span class="value" id="stat-stable">—</span></div>
+    </section>
+
+    <section class="grid-2">
+      <article class="panel">
+        <div class="panel-head">
+          <h2>帧波形与预测误差</h2>
+          <small id="frame-label">—</small>
+        </div>
+        <canvas id="wave-canvas" height="320" aria-label="帧波形与预测误差"></canvas>
+        <div class="legend">
+          <span style="--swatch:var(--blue)">分析帧 PCM</span>
+          <span style="--swatch:var(--orange)">预测误差 e[n]</span>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>LPC 极点位置</h2>
+          <span class="badge" id="stability-badge">—</span>
+        </div>
+        <canvas id="pole-canvas" height="320" aria-label="单位圆极点位置"></canvas>
+        <div class="legend">
+          <span style="--swatch:var(--cyan)">单位圆</span>
+          <span style="--swatch:var(--orange)">极点</span>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Toeplitz 自相关矩阵</h2>
+          <small>R[i,j] = r[|i−j|]</small>
+        </div>
+        <div class="matrix-wrap"><table class="matrix" id="matrix-table"></table></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>当前实验摘要</h2>
+          <small id="current-combo">—</small>
+        </div>
+        <div class="method-list" id="summary"></div>
+        <div class="links" id="stream-links"></div>
+      </article>
+
+      <article class="panel wide">
+        <div class="panel-head">
+          <h2>阶数对比：重建误差与码量</h2>
+          <small>同窗长下比较 · 点击上方阶数可切换细节</small>
+        </div>
+        <canvas id="compare-canvas" height="280" aria-label="不同阶数的重建误差与码量"></canvas>
+        <div class="legend">
+          <span style="--swatch:var(--lime)">重建 SNR（dB）</span>
+          <span style="--swatch:var(--blue)">总码率（kbit/s）</span>
+        </div>
+      </article>
+
+      <article class="panel wide">
+        <div class="panel-head">
+          <h2>阶数 × 窗长结果表</h2>
+          <small id="table-caption">—</small>
+        </div>
+        <div class="table-wrap">
+          <table class="data" id="results-table">
+            <thead><tr><th>窗长</th><th>阶数</th><th>SNR dB</th><th>MSE</th><th>系数 B</th><th>残差 B</th><th>码率 kbit/s</th><th>稳定</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel wide">
+        <div class="panel-head">
+          <h2>稳定性审计</h2>
+          <small>静音零能量保护 · 直接量化失稳后的稳定化/拒绝记录</small>
+        </div>
+        <div class="table-wrap">
+          <table class="data" id="audit-table">
+            <thead><tr><th>信号</th><th>量化</th><th>失稳帧</th><th>稳定化</th><th>拒绝</th><th>最大极点</th><th>方法</th><th>静音峰值</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel wide">
+        <div class="panel-head"><h2>方法与文件格式</h2></div>
+        <div class="method-list" id="method-notes"></div>
+      </article>
+    </section>
+
+    <footer class="footer">
+      数据由纯 Python 标准库生成。详细数值见同目录 <code>benchmark.json</code>；码流可用 <code>python3 decode_stream.py stream.coef stream.res output.wav</code> 独立解码。
+    </footer>
+  </main>
+  <script id="lab-data" type="application/json">{{DATA}}</script>
+  <script>{{JS}}</script>
+</body>
+</html>
