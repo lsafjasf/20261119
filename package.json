@@ -1,0 +1,24 @@
+{
+  "name": "gif-disposal-checker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frame-by-frame GIF disposal semantics checker with independent pixel verification",
+  "main": "src/gif.js",
+  "scripts": {
+    "demo": "node scripts/demo.js",
+    "check": "node src/cli.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "gif",
+    "disposal",
+    "animation",
+    "decoder"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "gifuct-js": "^2.1.2",
+    "omggif": "^1.0.10",
+    "pngjs": "^7.0.0"
+  }
+}
