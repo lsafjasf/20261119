@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>PINPOINT — JPEG 元数据定点编辑器</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="PINPOINT 首页">
+          <span class="brand-mark"><i></i><i></i><i></i></span>
+          <span class="brand-name">PINPOINT</span>
+          <span class="brand-cn">素材定点台</span>
+        </a>
+        <div class="topbar-meta">
+          <span class="live-dot"></span>
+          <span>本地处理 · 原图不出浏览器</span>
+        </div>
+        <div class="topbar-right">
+          <span class="mono">EXIF / TIFF</span>
+          <span class="version">v1.0</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="library-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">INGEST BATCH 05</p>
+              <h1>素材队列</h1>
+            </div>
+            <span class="count-badge" id="sample-count">05</span>
+          </div>
+
+          <label class="dropzone" id="dropzone" for="file-input">
+            <input id="file-input" type="file" accept="image/jpeg,.jpg,.jpeg" />
+            <span class="drop-icon" aria-hidden="true">↳</span>
+            <span>
+              <strong>拖入 JPEG</strong>
+              <small>也可以点击选择文件</small>
+            </span>
+          </label>
+
+          <div class="sample-label">
+            <span>构造样本</span>
+            <span class="mono">LOCAL SET</span>
+          </div>
+          <div class="sample-list" id="sample-list" aria-label="样本列表">
+            <div class="loading-row">正在载入样本…</div>
+          </div>
+
+          <div class="library-note">
+            <span class="note-index">01</span>
+            <p>只允许改写 <b>DateTimeOriginal</b> 与 <b>Orientation</b> 的值槽。APP1 长度、TIFF 偏移和 JPEG 扫描流保持原位。</p>
+          </div>
+          <div class="library-note muted">
+            <span class="note-index">02</span>
+            <p>发现越界引用时，整份元数据进入只读隔离，不提供“重新编码后修复”的出口。</p>
+          </div>
+        </aside>
+
+        <section class="inspect-panel" id="inspect-panel">
+          <div class="empty-state" id="empty-state">
+            <div class="empty-glyph">JPEG</div>
+            <h2>载入一份素材开始审计</h2>
+            <p>选择左侧样本，或拖入本地 JPEG。</p>
+          </div>
+          <div class="inspect-content" id="inspect-content" hidden>
+            <section class="asset-hero">
+              <div class="preview-wrap">
+                <img id="asset-preview" alt="当前 JPEG 预览" />
+                <div class="preview-corner mono" id="preview-size">—</div>
+                <div class="preview-seal" id="preview-seal">READ ONLY</div>
+              </div>
+              <div class="asset-copy">
+                <div class="asset-kicker">
+                  <span class="mono" id="asset-id">SAMPLE / 01</span>
+                  <span class="dot-sep"></span>
+                  <span id="asset-kind">SOF0 baseline</span>
+                </div>
+                <h2 id="asset-name">—</h2>
+                <p id="asset-note">—</p>
+                <div class="asset-stats">
+                  <div><span>文件</span><strong class="mono" id="stat-size">—</strong></div>
+                  <div><span>帧尺寸</span><strong class="mono" id="stat-frame">—</strong></div>
+                  <div><span>字节序</span><strong class="mono" id="stat-endian">—</strong></div>
+                  <div><span>IFD</span><strong class="mono" id="stat-ifds">—</strong></div>
+                </div>
+              </div>
+              <div class="hash-ticket">
+                <span class="eyebrow">SCAN SHA-256</span>
+                <code id="scan-hash">—</code>
+                <span class="hash-caption">SOS 熵编码流 → EOI 前</span>
+              </div>
+            </section>
+
+            <section class="audit-grid">
+              <article class="card byte-card">
+                <header class="card-head">
+                  <div><span class="eyebrow">BYTE MAP</span><h3>文件与可写范围</h3></div>
+                  <div class="legend">
+                    <span><i class="swatch meta"></i>元数据</span>
+                    <span><i class="swatch target"></i>目标字段</span>
+                    <span><i class="swatch scan"></i>扫描流</span>
+                  </div>
+                </header>
+                <div class="ruler-row mono"><span>0x000000</span><span id="map-mid">—</span><span id="map-end">—</span></div>
+                <div class="file-map" id="file-map"></div>
+                <div class="file-map-caption" id="file-map-caption"></div>
+                <div class="tiff-map-head mono"><span>TIFF LOCAL MAP</span><span id="tiff-map-size">—</span></div>
+                <div class="tiff-map" id="tiff-map"></div>
+                <div class="tiff-legend">
+                  <span><i class="swatch struct"></i>IFD 表</span>
+                  <span><i class="swatch external"></i>外置字段</span>
+                  <span><i class="swatch target"></i>可写值槽</span>
+                </div>
+                <div class="target-ranges" id="target-ranges"></div>
+              </article>
+
+              <article class="card relation-card">
+                <header class="card-head">
+                  <div><span class="eyebrow">REFERENCE GRAPH</span><h3>IFD 引用关系</h3></div>
+                  <span class="count-badge soft" id="ref-count">0 LINKS</span>
+                </header>
+                <div class="ref-rail" id="ref-rail"></div>
+              </article>
+            </section>
+
+            <section class="card ifd-card">
+              <header class="card-head">
+                <div><span class="eyebrow">TIFF DIRECTORY</span><h3>目录与字段</h3></div>
+                <div class="ifd-tabs" id="ifd-tabs"></div>
+              </header>
+              <div class="ifd-content" id="ifd-content"></div>
+            </section>
+
+            <section class="card result-card" id="result-card" hidden>
+              <header class="card-head result-head">
+                <div>
+                  <span class="eyebrow">PATCH REPORT</span>
+                  <h3>逐字节修改区间</h3>
+                </div>
+                <div class="verify-pill" id="verify-pill">PASS</div>
+              </header>
+              <div class="verification-strip" id="verification-strip"></div>
+              <div class="scan-compare" id="scan-compare"></div>
+              <div class="change-table-wrap">
+                <table class="change-table">
+                  <thead>
+                    <tr><th>文件偏移</th><th>长度</th><th>字段</th><th>原值</th><th>新值</th></tr>
+                  </thead>
+                  <tbody id="change-body"></tbody>
+                </table>
+              </div>
+              <div class="result-actions">
+                <button class="button primary" id="download-button" type="button">下载归档副本 <span>↓</span></button>
+                <span class="result-footnote" id="result-footnote"></span>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <aside class="edit-panel">
+          <div class="edit-head">
+            <span class="eyebrow">PINPOINT WRITE</span>
+            <h2>定点写入</h2>
+            <p>值覆写，不重排目录，不触碰扫描数据。</p>
+          </div>
+
+          <form id="edit-form" class="edit-form" autocomplete="off">
+            <fieldset disabled id="edit-fields">
+              <div class="field-block">
+                <div class="field-title">
+                  <label for="date-input">拍摄时间</label>
+                  <span class="mono">0x9003</span>
+                </div>
+                <div class="date-input-wrap">
+                  <input id="date-input" name="date" class="mono" type="text" spellcheck="false" placeholder="YYYY:MM:DD HH:MM:SS" />
+                  <span class="input-suffix">20B</span>
+                </div>
+                <div class="field-help" id="date-help">DateTimeOriginal · ASCII · 原位覆写</div>
+              </div>
+
+              <div class="field-block">
+                <div class="field-title">
+                  <label>图像方向</label>
+                  <span class="mono">0x0112</span>
+                </div>
+                <div class="orientation-grid" id="orientation-grid"></div>
+                <div class="orientation-note" id="orientation-note">选择画面的正确朝向</div>
+              </div>
+            </fieldset>
+
+            <section class="preflight" id="preflight">
+              <div class="preflight-head">
+                <span>写前检查</span>
+                <span class="status-badge" id="preflight-status">WAITING</span>
+              </div>
+              <div id="preflight-body" class="preflight-body">
+                <p class="muted-copy">载入素材后显示目标字段与可写区间。</p>
+              </div>
+            </section>
+
+            <div class="edit-guard">
+              <span class="guard-icon">⌁</span>
+              <p><b>硬约束</b> 写入必须完全落在既有字段值槽内；任何越界引用都会阻止写出。</p>
+            </div>
+
+            <button class="button write-button" id="write-button" type="submit" disabled>
+              <span id="write-button-label">等待素材</span>
+              <span class="button-arrow">→</span>
+            </button>
+            <button class="button download-button" id="quick-download" type="button" hidden>下载已校验副本 ↓</button>
+          </form>
+
+          <div class="engine-card">
+            <div class="engine-row"><span>JPEG 重编码</span><strong class="off">OFF</strong></div>
+            <div class="engine-row"><span>扫描流写入</span><strong class="off">0 B</strong></div>
+            <div class="engine-row"><span>写后回读</span><strong class="on">ON</strong></div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+[
+  {
+    "id": "canon-le",
+    "name": "Canon EOS · 小端",
+    "subtitle": "II · 外置日期 · 3 IFD",
+    "note": "标准小端 TIFF，日期与制造商字段均外置，方向内联。",
+    "features": [
+      "II",
+      "外置字段",
+      "多 IFD"
+    ],
+    "fileName": "canon-le.jpg",
+    "size": 3961,
+    "order": 0
+  },
+  {
+    "id": "nikon-be",
+    "name": "Nikon Z8 · 大端",
+    "subtitle": "MM · 外置日期 · 2 IFD",
+    "note": "大端 TIFF（MM），同一套偏移计算逻辑，日期槽保持 20 字节。",
+    "features": [
+      "MM",
+      "外置字段",
+      "大端"
+    ],
+    "fileName": "nikon-be.jpg",
+    "size": 3837,
+    "order": 1
+  },
+  {
+    "id": "multi-ifd",
+    "name": "Multi-IFD 扫描件",
+    "subtitle": "II · Exif/GPS/SubIFD · 4 IFD",
+    "note": "IFD0 同时引用 Exif、GPS 与 SubIFD，指针对均相对 TIFF 头计算。",
+    "features": [
+      "II",
+      "4 IFD",
+      "指针链"
+    ],
+    "fileName": "multi-ifd.jpg",
+    "size": 4017,
+    "order": 2
+  },
+  {
+    "id": "duplicate",
+    "name": "重复标签样本",
+    "subtitle": "II · 2×日期 · 2×方向",
+    "note": "同一 IFD 内各出现两次 DateTimeOriginal 与 Orientation，写入时同步全部副本。",
+    "features": [
+      "II",
+      "重复 ×4",
+      "冲突值"
+    ],
+    "fileName": "duplicate.jpg",
+    "size": 3709,
+    "order": 3
+  },
+  {
+    "id": "illegal-offset",
+    "name": "非法偏移样本",
+    "subtitle": "MM · 日期引用越界",
+    "note": "DateTimeOriginal 值偏移落在 TIFF 之外。工具应展示引用并拒绝任何写出。",
+    "features": [
+      "MM",
+      "越界",
+      "只读隔离"
+    ],
+    "quarantine": true,
+    "fileName": "illegal-offset.jpg",
+    "size": 3665,
+    "order": 4
+  }
+]

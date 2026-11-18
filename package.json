@@ -1,0 +1,14 @@
+{
+  "name": "pinpoint-exif-archive",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Byte-accurate JPEG EXIF editor for archive ingest",
+  "scripts": {
+    "start": "node server.js",
+    "samples": "node scripts/generate-samples.mjs",
+    "patch": "node scripts/patch.mjs",
+    "test": "node --test",
+    "check": "node --check src/app.js && node --check src/exif.js && node --check scripts/patch.mjs && node --test"
+  }
+}
