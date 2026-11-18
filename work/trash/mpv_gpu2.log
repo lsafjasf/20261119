@@ -1,0 +1,411 @@
+[   0.001][v][cplayer] mpv v0.41.0 Copyright © 2000-2025 mpv/MPlayer/mplayer2 projects
+[   0.001][v][cplayer] libplacebo version: v7.360.0
+[   0.001][v][cplayer] FFmpeg version: 8.0.1-3ubuntu2
+[   0.001][v][cplayer] FFmpeg library versions:
+[   0.001][v][cplayer]    libavcodec      62.11.100
+[   0.001][v][cplayer]    libavdevice     62.1.100
+[   0.001][v][cplayer]    libavfilter     11.4.100
+[   0.001][v][cplayer]    libavformat     62.3.100
+[   0.001][v][cplayer]    libavutil       60.8.100
+[   0.001][v][cplayer]    libswresample   6.1.100
+[   0.001][v][cplayer]    libswscale      9.1.100
+[   0.001][v][cplayer] Configuration: -Dpython.bytecompile=-1 -Dlibmpv=true -Dbuild-date=false -Dcdda=enabled -Ddvdnav=enabled -Ddvbin=enabled -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu -Dlocalstatedir=/var -Dsysconfdir=/etc -Dbuildtype=plain -Dwrap_mode=nodownload
+[   0.001][v][cplayer] List of enabled features: alsa cdda cplugins cuda-hwaccel cuda-interop dmabuf-interop-gl dmabuf-wayland drm dvbin dvdnav egl egl-drm egl-wayland egl-x11 ffmpeg ffnvcodec gbm gl glibc-thread-name glob glob-posix gpl iconv jack javascript jpeg lcms2 libarchive libass libavdevice libbluray libdl libplacebo linux-fstatfs lua52 memfd-create memrchr pipewire posix posix-shm ppoll pthread-condattr-setclock pulse rubberband rubberband-3 sixel sndio sndio-1-9 uchardet vaapi vaapi-drm vaapi-wayland vaapi-x11 vdpau vector vk-khr-display vt.h vulkan wayland wayland-protocols-1-32 wayland-protocols-1-38 wayland-protocols-1-39 wayland-protocols-1-41 wayland-protocols-1-44 wayland-protocols-1-47 x11 x11-clipboard xv zimg zimg-st428 zlib
+[   0.001][v][cplayer] Command line options: '--vo=gpu' '--ao=null' '--no-config' '--no-terminal' '--log-file=work/mpv_gpu2.log' '--script=work/sync_probe.lua' '--length=3' 'out/muxed.webm'
+[   0.001][v][cplayer] mpv v0.41.0 Copyright © 2000-2025 mpv/MPlayer/mplayer2 projects
+[   0.001][v][cplayer] libplacebo version: v7.360.0
+[   0.001][v][cplayer] FFmpeg version: 8.0.1-3ubuntu2
+[   0.001][v][cplayer] FFmpeg library versions:
+[   0.001][v][cplayer]    libavcodec      62.11.100
+[   0.001][v][cplayer]    libavdevice     62.1.100
+[   0.001][v][cplayer]    libavfilter     11.4.100
+[   0.001][v][cplayer]    libavformat     62.3.100
+[   0.001][v][cplayer]    libavutil       60.8.100
+[   0.001][v][cplayer]    libswresample   6.1.100
+[   0.001][v][cplayer]    libswscale      9.1.100
+[   0.001][v][cplayer] Configuration: -Dpython.bytecompile=-1 -Dlibmpv=true -Dbuild-date=false -Dcdda=enabled -Ddvdnav=enabled -Ddvbin=enabled -Dprefix=/usr -Dlibdir=lib/x86_64-linux-gnu -Dlocalstatedir=/var -Dsysconfdir=/etc -Dbuildtype=plain -Dwrap_mode=nodownload
+[   0.001][v][cplayer] List of enabled features: alsa cdda cplugins cuda-hwaccel cuda-interop dmabuf-interop-gl dmabuf-wayland drm dvbin dvdnav egl egl-drm egl-wayland egl-x11 ffmpeg ffnvcodec gbm gl glibc-thread-name glob glob-posix gpl iconv jack javascript jpeg lcms2 libarchive libass libavdevice libbluray libdl libplacebo linux-fstatfs lua52 memfd-create memrchr pipewire posix posix-shm ppoll pthread-condattr-setclock pulse rubberband rubberband-3 sixel sndio sndio-1-9 uchardet vaapi vaapi-drm vaapi-wayland vaapi-x11 vdpau vector vk-khr-display vt.h vulkan wayland wayland-protocols-1-32 wayland-protocols-1-38 wayland-protocols-1-39 wayland-protocols-1-41 wayland-protocols-1-44 wayland-protocols-1-47 x11 x11-clipboard xv zimg zimg-st428 zlib
+[   0.001][d][global] home path: '' -> '-'
+[   0.001][d][global] user path: '~~home/' -> ''
+[   0.001][d][global] user path: '~~old_home/' -> ''
+[   0.001][v][cplayer] Setting option 'vo' = 'gpu' (flags = 8)
+[   0.001][v][cplayer] Setting option 'ao' = 'null' (flags = 8)
+[   0.001][v][cplayer] Setting option 'config' = 'no' (flags = 8)
+[   0.001][v][cplayer] Setting option 'terminal' = 'no' (flags = 8)
+[   0.001][v][cplayer] Setting option 'log-file' = 'work/mpv_gpu2.log' (flags = 8)
+[   0.001][v][cplayer] Setting option 'scripts-append' = 'work/sync_probe.lua' (flags = 8)
+[   0.001][v][cplayer] Setting option 'length' = '3' (flags = 8)
+[   0.002][d][osc] Loading lua script @osc.lua...
+[   0.002][d][ytdl_hook] Loading lua script @ytdl_hook.lua...
+[   0.002][d][stats] Loading lua script @stats.lua...
+[   0.002][d][console] Loading lua script @console.lua...
+[   0.002][d][ytdl_hook] loading mp.defaults
+[   0.002][d][auto_profiles] Loading lua script @auto_profiles.lua...
+[   0.002][d][osc] loading mp.defaults
+[   0.002][d][stats] loading mp.defaults
+[   0.002][d][select] Loading lua script @select.lua...
+[   0.002][d][console] loading mp.defaults
+[   0.002][d][positioning] Loading lua script @positioning.lua...
+[   0.002][d][auto_profiles] loading mp.defaults
+[   0.002][d][commands] Loading lua script @commands.lua...
+[   0.002][d][context_menu] Loading lua script @context_menu.lua...
+[   0.002][d][positioning] loading mp.defaults
+[   0.002][d][select] loading mp.defaults
+[   0.002][d][commands] loading mp.defaults
+[   0.002][d][context_menu] loading mp.defaults
+[   0.002][d][ytdl_hook] loading @ytdl_hook.lua
+[   0.002][d][osc] loading @osc.lua
+[   0.002][d][stats] loading @stats.lua
+[   0.002][d][auto_profiles] loading @auto_profiles.lua
+[   0.002][d][console] loading @console.lua
+[   0.002][v][clipboard/wayland] Registered interface wl_seat at version 7
+[   0.003][v][clipboard/wayland] Compositor doesn't support the ext_data_control_manager_v1 protocol!
+[   0.003][v][clipboard/wayland] Deregistering seat 0x13
+[   0.003][d][select] loading @select.lua
+[   0.003][v][clipboard/x11] Stopping init due to suspected wayland environment
+[   0.003][d][context_menu] loading @context_menu.lua
+[   0.003][d][positioning] loading @positioning.lua
+[   0.003][v][clipboard] Initialized vo clipboard backend.
+[   0.003][d][commands] loading @commands.lua
+[   0.003][d][sync_probe] Loading lua script work/sync_probe.lua...
+[   0.003][d][positioning] reading options for positioning
+[   0.003][d][positioning] script-opts/positioning.conf not found.
+[   0.003][d][positioning] lua-settings/positioning.conf not found.
+[   0.003][d][ytdl_hook] reading options for ytdl_hook
+[   0.003][d][ytdl_hook] script-opts/ytdl_hook.conf not found.
+[   0.003][d][ytdl_hook] lua-settings/ytdl_hook.conf not found.
+[   0.003][v][cplayer] Waiting for scripts...
+[   0.003][d][sync_probe] loading mp.defaults
+[   0.003][d][cplayer] Run command: define-section, flags=64, args=[name="input_positioning", contents="", flags="default"]
+[   0.003][d][cplayer] Run command: enable-section, flags=64, args=[name="input_positioning", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.003][d][select] reading options for select
+[   0.003][d][context_menu] reading options for context_menu
+[   0.003][d][select] script-opts/select.conf not found.
+[   0.003][d][select] lua-settings/select.conf not found.
+[   0.003][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_positioning", contents="", flags="force"]
+[   0.003][d][context_menu] script-opts/context_menu.conf not found.
+[   0.003][d][context_menu] lua-settings/context_menu.conf not found.
+[   0.003][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_positioning", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.003][d][sync_probe] loading file work/sync_probe.lua
+[   0.003][d][commands] reading options for commands
+[   0.003][d][commands] script-opts/commands.conf not found.
+[   0.003][d][commands] lua-settings/commands.conf not found.
+[   0.004][d][console] reading options for console
+[   0.004][d][console] script-opts/console.conf not found.
+[   0.004][d][console] lua-settings/console.conf not found.
+[   0.004][d][stats] reading options for stats
+[   0.004][d][stats] script-opts/stats.conf not found.
+[   0.004][d][stats] lua-settings/stats.conf not found.
+[   0.004][d][cplayer] Run command: define-section, flags=64, args=[name="input_select", contents="", flags="default"]
+[   0.004][d][cplayer] Run command: define-section, flags=64, args=[name="input_commands", contents="", flags="default"]
+[   0.004][d][cplayer] Run command: enable-section, flags=64, args=[name="input_select", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.004][d][cplayer] Run command: enable-section, flags=64, args=[name="input_commands", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.004][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_commands", contents="", flags="force"]
+[   0.004][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_commands", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.004][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_select", contents="", flags="force"]
+[   0.004][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_select", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.004][d][cplayer] Run command: define-section, flags=64, args=[name="input_console", contents="", flags="default"]
+[   0.004][d][cplayer] Run command: enable-section, flags=64, args=[name="input_console", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.004][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_console", contents="", flags="force"]
+[   0.004][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_console", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.004][d][auto_profiles] Destroying client handle...
+[   0.004][d][cplayer] Run command: define-section, flags=64, args=[name="showhide", contents="mouse_move script-binding osc/__keybinding1\nmouse_leave script-binding osc/__keybinding2\n", flags="force"]
+[   0.005][d][cplayer] Run command: define-section, flags=64, args=[name="showhide_wc", contents="mouse_move script-binding osc/__keybinding3\nmouse_leave script-binding osc/__keybinding4\n", flags="force"]
+[   0.005][d][cplayer] Run command: enable-section, flags=64, args=[name="showhide", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.005][d][cplayer] Run command: enable-section, flags=64, args=[name="showhide_wc", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.005][d][cplayer] Run command: define-section, flags=64, args=[name="input_stats", contents="", flags="default"]
+[   0.005][d][cplayer] Run command: enable-section, flags=64, args=[name="input_stats", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.005][d][cplayer] Run command: define-section, flags=64, args=[name="input_forced_stats", contents="", flags="force"]
+[   0.005][d][cplayer] Run command: enable-section, flags=64, args=[name="input_forced_stats", flags="allow-hide-cursor+allow-vo-dragging"]
+[   0.005][d][cplayer] Run command: define-section, flags=64, args=[name="input", contents="mbtn_left script-binding osc/__keybinding5\nmbtn_mid script-binding osc/__keybinding6\nmbtn_right script-binding osc/__keybinding7\nshift+mbtn_left script-binding osc/__keybinding8\nwheel_up script-binding osc/__keybinding9\nwheel_down script-binding osc/__keybinding10\nmbtn_left_dbl ignore\nshift+mbtn_left_dbl ignore\nmbtn_right_dbl ignore\n", flags="force"]
+[   0.005][d][cplayer] Run command: enable-section, flags=64, args=[name="input", flags=""]
+[   0.005][d][cplayer] Run command: define-section, flags=64, args=[name="window-controls", contents="mbtn_left script-binding osc/__keybinding11\n", flags="force"]
+[   0.005][d][cplayer] Run command: enable-section, flags=64, args=[name="window-controls", flags=""]
+[   0.005][d][osc] reading options for osc
+[   0.005][d][osc] script-opts/osc.conf not found.
+[   0.005][d][osc] lua-settings/osc.conf not found.
+[   0.005][v][cplayer] Set property: user-data/osc/visibility="auto" -> 1
+[   0.005][d][cplayer] Run command: disable-section, flags=64, args=[name="input"]
+[   0.005][d][cplayer] Run command: disable-section, flags=64, args=[name="window-controls"]
+[   0.005][v][cplayer] Set property: user-data/osc/margins={"b":0,"r":0,"t":0,"l":0} -> 1
+[   0.005][v][cplayer] Done loading scripts.
+[   0.005][d][global] state path: 'watch_later' -> '-'
+[   0.005][v][cplayer] Running hook: auto_profiles/on_before_start_file
+[   0.005][v][cplayer] Failed sending hook command auto_profiles/on_before_start_file. Removing hook.
+[   0.005][d][global] state path: 'watch_later' -> '-'
+[   0.005][v][cplayer] Running hook: auto_profiles/on_load
+[   0.005][v][cplayer] Failed sending hook command auto_profiles/on_load. Removing hook.
+[   0.005][v][cplayer] Running hook: ytdl_hook/on_load
+[   0.005][v][cplayer] Set property: user-data/osc/margins={"b":0,"r":0,"t":0,"l":0} -> 1
+[   0.005][d][osc] osc_init
+[   0.005][v][cplayer] Running hook: ytdl_hook/on_load
+[   0.005][v][ytdl_hook] playlist hook
+[   0.005][v][ifo_dvdnav] Opening out/muxed.webm
+[   0.006][v][bdmv/bluray] Opening out/muxed.webm
+[   0.006][v][file] Opening out/muxed.webm
+[   0.006][d][file] resize stream to 131072 bytes, drop 0 bytes
+[   0.006][d][file] Stream opened successfully.
+[   0.006][v][demux] Trying demuxers for level=normal.
+[   0.006][d][demux] Trying demuxer: directory (force-level: normal)
+[   0.006][v][cplayer] Set property: user-data/osc/margins={"b":0,"r":0,"t":0,"l":0} -> 1
+[   0.006][d][osd/libass] ASS library version: 0x1704000 (runtime 0x1704000)
+[   0.006][d][demux] Trying demuxer: disc (force-level: normal)
+[   0.006][d][demux] Trying demuxer: edl (force-level: normal)
+[   0.006][v][osd/libass] libass API version: 0x1704000
+[   0.006][v][osd/libass] libass source: tarball: 0.17.4
+[   0.006][d][demux] Trying demuxer: cue (force-level: normal)
+[   0.006][d][demux] Trying demuxer: rawaudio (force-level: normal)
+[   0.006][d][demux] Trying demuxer: rawvideo (force-level: normal)
+[   0.006][d][demux] Trying demuxer: mkv (force-level: normal)
+[   0.006][d][mkv] Found the head...
+[   0.006][d][mkv] + a segment...
+[   0.006][d][mkv] Parsing seek head...
+[   0.006][d][mkv] |+ segment information...
+[   0.006][d][mkv] float 6600.000000
+[   0.006][d][mkv] | + muxing app: Lavf
+[   0.006][d][mkv] | + writing app: Lavf
+[   0.006][d][mkv] | + timecode scale: 1000000
+[   0.006][d][mkv] | + duration: 6.600s
+[   0.006][d][mkv] |+ segment tracks...
+[   0.006][d][mkv] float 44100.000000
+[   0.006][d][mkv] | + a track...
+[   0.006][d][mkv] |  + Track number: 1
+[   0.006][d][mkv] |  + Track type: Video
+[   0.006][d][mkv] |  + Video track
+[   0.006][d][mkv] |   + Pixel width: 640
+[   0.006][d][mkv] |   + Pixel height: 360
+[   0.006][d][mkv] |    + Levels: limited
+[   0.006][d][mkv] |  + Codec ID: V_VP9
+[   0.006][d][mkv] |  + Language: und
+[   0.006][d][mkv] |  + Default flag: 0
+[   0.006][d][mkv] |  + Default duration: 40.000ms ( = 25.000 fps)
+[   0.006][d][mkv] | + a track...
+[   0.006][d][mkv] |  + Track number: 2
+[   0.006][d][mkv] |  + Track type: Audio
+[   0.006][d][mkv] |  + Audio track
+[   0.006][d][mkv] |   + Sampling frequency: 44100.000000
+[   0.006][d][mkv] |   + Bit depth: 32
+[   0.006][d][mkv] |   + Channels: 1
+[   0.006][d][mkv] |  + Codec ID: A_VORBIS
+[   0.006][d][mkv] |  + CodecPrivate, length 3585
+[   0.006][d][mkv] |  + Language: und
+[   0.006][d][mkv] |  + Default flag: 0
+[   0.006][d][mkv] |+ found cluster
+[   0.006][v][mkv] Deferring reading cues.
+[   0.006][v][mkv] All headers are parsed!
+[   0.006][v][osd/libass] Shaper: FriBidi 1.0.16 (SIMPLE) HarfBuzz-ng 12.3.2 (COMPLEX)
+[   0.006][v][osd/libass] Setting up fonts...
+[   0.006][v][mkv] Start PTS: 0.297000
+[   0.006][v][demux] Detected file format: Matroska
+[   0.006][v][cplayer] Opening done: out/muxed.webm
+[   0.011][v][osd/libass] Using font provider fontconfig
+[   0.011][v][osd/libass] Done.
+[   0.012][v][find_files] Loading external files in out/
+[   0.012][v][cplayer] Running hook: auto_profiles/on_preloaded
+[   0.012][v][cplayer] Failed sending hook command auto_profiles/on_preloaded. Removing hook.
+[   0.012][v][cplayer] Running hook: ytdl_hook/on_preloaded
+[   0.012][v][mkv] select track 0
+[   0.012][v][mkv] select track 1
+[   0.012][i][cplayer] ● Video  --vid=1  (vp9 640x360 25 fps)
+[   0.012][i][cplayer] ● Audio  --aid=1  (vorbis 1ch 44100 Hz)
+[   0.012][v][vo/gpu] Probing for best GPU context.
+[   0.012][v][vo/gpu/auto] Initializing GPU context 'auto'
+[   0.012][v][vo/gpu/vulkan] Initializing GPU context 'waylandvk'
+[   0.012][v][vo/gpu/libplacebo] Initialized libplacebo v7.360.0 (API v360)
+[   0.012][d][vo/gpu/libplacebo] Available instance version: 1.4.341
+[   0.012][d][vo/gpu/libplacebo] Spent 0.150 ms enumerating instance layers
+[   0.012][d][vo/gpu/libplacebo] Available layers:
+[   0.012][d][vo/gpu/libplacebo]     VK_LAYER_MESA_device_select (v1.4.303)
+[   0.012][d][vo/gpu/libplacebo]     VK_LAYER_MESA_anti_lag (v1.4.303)
+[   0.012][d][vo/gpu/libplacebo]     VK_LAYER_INTEL_nullhw (v1.1.73)
+[   0.012][d][vo/gpu/libplacebo]     VK_LAYER_MESA_overlay (v1.4.303)
+[   0.012][d][vo/gpu/libplacebo]     VK_LAYER_MESA_screenshot (v1.4.303)
+[   0.036][v][vo/gpu/libplacebo] Spent 23.519 ms enumerating instance extensions
+[   0.036][d][vo/gpu/libplacebo] Available instance extensions:
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_device_group_creation
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_display
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_external_fence_capabilities
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_external_memory_capabilities
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_external_semaphore_capabilities
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_get_display_properties2
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_get_physical_device_properties2
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_get_surface_capabilities2
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_surface
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_surface_maintenance1
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_surface_protected_capabilities
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_wayland_surface
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_xcb_surface
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_xlib_surface
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_acquire_drm_display
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_acquire_xlib_display
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_debug_report
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_debug_utils
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_direct_mode_display
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_display_surface_counter
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_headless_surface
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_surface_maintenance1
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_swapchain_colorspace
+[   0.036][d][vo/gpu/libplacebo]     VK_KHR_portability_enumeration
+[   0.036][d][vo/gpu/libplacebo]     VK_LUNARG_direct_driver_loading
+[   0.036][d][vo/gpu/libplacebo]     VK_EXT_layer_settings
+[   0.036][v][vo/gpu/libplacebo] Creating vulkan instance with extensions:
+[   0.036][v][vo/gpu/libplacebo]     VK_KHR_surface
+[   0.036][v][vo/gpu/libplacebo]     VK_EXT_swapchain_colorspace
+[   0.036][v][vo/gpu/libplacebo]     VK_KHR_get_surface_capabilities2
+[   0.036][v][vo/gpu/libplacebo]     VK_KHR_surface_maintenance1
+[   0.036][v][vo/gpu/libplacebo]     VK_EXT_surface_maintenance1
+[   0.036][v][vo/gpu/libplacebo]     VK_KHR_portability_enumeration
+[   0.036][v][vo/gpu/libplacebo]     VK_KHR_surface
+[   0.036][v][vo/gpu/libplacebo]     VK_KHR_wayland_surface
+[   0.039][d][vo/gpu/libplacebo] Spent 2.865 ms creating vulkan instance
+[   0.039][v][vo/gpu/wayland] Registered interface wl_compositor at version 4
+[   0.039][v][vo/gpu/wayland] Registered interface wl_subcompositor at version 1
+[   0.039][v][vo/gpu/wayland] Registered interface wp_viewporter at version 1
+[   0.039][v][vo/gpu/wayland] Registered interface wp_presentation at version 1
+[   0.039][v][vo/gpu/wayland] Registered interface wl_data_device_manager at version 3
+[   0.039][v][vo/gpu/wayland] Registered interface wl_shm at version 1
+[   0.039][v][vo/gpu/wayland] Registered interface wl_output at version 3
+[   0.039][v][vo/gpu/wayland] Registered interface xdg_wm_base at version 1
+[   0.039][v][vo/gpu/wayland] Registered interface wl_seat at version 7
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the xdg_activation_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the wp_color_manager_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the wp_color_representation_surface_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the wp_content_type_manager_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the wp_single_pixel_buffer_manager_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the wp_fractional_scale_manager_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the wp_cursor_shape_manager_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the zxdg_decoration_manager_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the zwp_idle_inhibit_manager_v1 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the zwp_text_input_manager_v3 protocol!
+[   0.039][v][vo/gpu/wayland] Compositor doesn't support the zwp_tablet_manager_v2 protocol!
+[   0.039][v][vo/gpu/wayland] Registered output weston rdp () (0xb):
+[   0.039][v][vo/gpu/wayland] 	x: 0px, y: 0px
+[   0.039][v][vo/gpu/wayland] 	w: 1920px (0mm), h: 1080px (0mm)
+[   0.039][v][vo/gpu/wayland] 	transform: 0
+[   0.039][v][vo/gpu/wayland] 	scale: 1.000000
+[   0.039][v][vo/gpu/wayland] 	Hz: 60.000000
+[   0.039][v][vo/gpu/libplacebo] Probing for vulkan devices:
+[   0.040][d][vo/gpu/libplacebo] Spent 1.229 ms enumerating physical devices
+[   0.040][v][vo/gpu/libplacebo]     GPU 0: llvmpipe (LLVM 21.1.8, 256 bits) v1.4.335 (software)
+[   0.040][v][vo/gpu/libplacebo]            uuid: 6D:65:73:61:32:36:2E:30:2E:38:2D:31:75:62:75:00
+[   0.040][d][vo/gpu/libplacebo]       -> excluding due to !params->allow_software
+[   0.040][f][vo/gpu/libplacebo] Found no suitable device, giving up.
+[   0.040][f][vo/gpu/libplacebo] Failed initializing vulkan device
+[   0.041][v][vo/gpu/wayland] Deregistering output weston rdp () (0xb)
+[   0.041][v][vo/gpu/wayland] Deregistering seat 0x13
+[   0.041][v][vo/gpu/vulkan] Initializing GPU context 'x11vk'
+[   0.041][v][vo/gpu/libplacebo] Initialized libplacebo v7.360.0 (API v360)
+[   0.041][d][vo/gpu/libplacebo] Available instance version: 1.4.341
+[   0.041][d][vo/gpu/libplacebo] Spent 0.115 ms enumerating instance layers
+[   0.041][d][vo/gpu/libplacebo] Available layers:
+[   0.041][d][vo/gpu/libplacebo]     VK_LAYER_MESA_device_select (v1.4.303)
+[   0.041][d][vo/gpu/libplacebo]     VK_LAYER_MESA_anti_lag (v1.4.303)
+[   0.041][d][vo/gpu/libplacebo]     VK_LAYER_INTEL_nullhw (v1.1.73)
+[   0.041][d][vo/gpu/libplacebo]     VK_LAYER_MESA_overlay (v1.4.303)
+[   0.041][d][vo/gpu/libplacebo]     VK_LAYER_MESA_screenshot (v1.4.303)
+[   0.046][d][vo/gpu/libplacebo] Spent 4.210 ms enumerating instance extensions
+[   0.046][d][vo/gpu/libplacebo] Available instance extensions:
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_device_group_creation
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_display
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_external_fence_capabilities
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_external_memory_capabilities
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_external_semaphore_capabilities
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_get_display_properties2
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_get_physical_device_properties2
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_get_surface_capabilities2
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_surface
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_surface_maintenance1
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_surface_protected_capabilities
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_wayland_surface
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_xcb_surface
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_xlib_surface
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_acquire_drm_display
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_acquire_xlib_display
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_debug_report
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_debug_utils
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_direct_mode_display
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_display_surface_counter
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_headless_surface
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_surface_maintenance1
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_swapchain_colorspace
+[   0.046][d][vo/gpu/libplacebo]     VK_KHR_portability_enumeration
+[   0.046][d][vo/gpu/libplacebo]     VK_LUNARG_direct_driver_loading
+[   0.046][d][vo/gpu/libplacebo]     VK_EXT_layer_settings
+[   0.046][v][vo/gpu/libplacebo] Creating vulkan instance with extensions:
+[   0.046][v][vo/gpu/libplacebo]     VK_KHR_surface
+[   0.046][v][vo/gpu/libplacebo]     VK_EXT_swapchain_colorspace
+[   0.046][v][vo/gpu/libplacebo]     VK_KHR_get_surface_capabilities2
+[   0.046][v][vo/gpu/libplacebo]     VK_KHR_surface_maintenance1
+[   0.046][v][vo/gpu/libplacebo]     VK_EXT_surface_maintenance1
+[   0.046][v][vo/gpu/libplacebo]     VK_KHR_portability_enumeration
+[   0.046][v][vo/gpu/libplacebo]     VK_KHR_surface
+[   0.046][v][vo/gpu/libplacebo]     VK_KHR_xlib_surface
+[   0.048][d][vo/gpu/libplacebo] Spent 2.864 ms creating vulkan instance
+[   0.048][v][vo/gpu/x11] X11 opening display: :0
+[   0.050][d][vo/gpu/x11] X11 running at 1920x1080 (":0" => local display)
+[   0.050][d][vo/gpu/x11] Detected wm supports NetWM.
+[   0.050][d][vo/gpu/x11] Detected wm supports FULLSCREEN state.
+[   0.051][v][vo/gpu/x11] Display 0 (rdp-0): [0, 0, 1920, 1080] @ 59.962844 FPS
+[   0.051][v][vo/gpu/x11] Current display FPS: 59.962844
+[   0.051][v][vo/gpu/x11] The XPresent extension was found.
+[   0.051][v][vo/gpu/x11] XPresent disabled.
+[   0.052][v][vo/gpu/libplacebo] Probing for vulkan devices:
+[   0.053][d][vo/gpu/libplacebo] Spent 0.566 ms enumerating physical devices
+[   0.053][v][vo/gpu/libplacebo]     GPU 0: llvmpipe (LLVM 21.1.8, 256 bits) v1.4.335 (software)
+[   0.053][v][vo/gpu/libplacebo]            uuid: 6D:65:73:61:32:36:2E:30:2E:38:2D:31:75:62:75:00
+[   0.053][d][vo/gpu/libplacebo]       -> excluding due to !params->allow_software
+[   0.053][f][vo/gpu/libplacebo] Found no suitable device, giving up.
+[   0.053][f][vo/gpu/libplacebo] Failed initializing vulkan device
+[   0.053][d][vo/gpu/x11] uninit ...
+[   0.053][v][vo/gpu/opengl] Initializing GPU context 'wayland'
+[   0.053][v][vo/gpu/wayland] Registered interface wl_compositor at version 4
+[   0.053][v][vo/gpu/wayland] Registered interface wl_subcompositor at version 1
+[   0.053][v][vo/gpu/wayland] Registered interface wp_viewporter at version 1
+[   0.053][v][vo/gpu/wayland] Registered interface wp_presentation at version 1
+[   0.053][v][vo/gpu/wayland] Registered interface wl_data_device_manager at version 3
+[   0.053][v][vo/gpu/wayland] Registered interface wl_shm at version 1
+[   0.053][v][vo/gpu/wayland] Registered interface wl_output at version 3
+[   0.053][v][vo/gpu/wayland] Registered interface xdg_wm_base at version 1
+[   0.053][v][vo/gpu/wayland] Registered interface wl_seat at version 7
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the xdg_activation_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the wp_color_manager_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the wp_color_representation_surface_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the wp_content_type_manager_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the wp_single_pixel_buffer_manager_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the wp_fractional_scale_manager_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the wp_cursor_shape_manager_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the zxdg_decoration_manager_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the zwp_idle_inhibit_manager_v1 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the zwp_text_input_manager_v3 protocol!
+[   0.053][v][vo/gpu/wayland] Compositor doesn't support the zwp_tablet_manager_v2 protocol!
+[   0.054][v][vo/gpu/wayland] Registered output weston rdp () (0xb):
+[   0.054][v][vo/gpu/wayland] 	x: 0px, y: 0px
+[   0.054][v][vo/gpu/wayland] 	w: 1920px (0mm), h: 1080px (0mm)
+[   0.054][v][vo/gpu/wayland] 	transform: 0
+[   0.054][v][vo/gpu/wayland] 	scale: 1.000000
+[   0.054][v][vo/gpu/wayland] 	Hz: 60.000000
+[   0.067][v][vo/gpu/opengl] EGL_VERSION=1.5
+[   0.067][v][vo/gpu/opengl] EGL_VENDOR=Mesa Project
+[   0.067][v][vo/gpu/opengl] EGL_CLIENT_APIS=OpenGL OpenGL_ES 
+[   0.067][v][vo/gpu/opengl] Trying to create Desktop OpenGL context.
+[   0.067][d][vo/gpu/opengl] Chosen EGLConfig:
+[   0.067][d][vo/gpu/opengl]   EGL_CONFIG_ID=0x10
+[   0.067][d][vo/gpu/opengl]   EGL_RED_SIZE=0x8
+[   0.067][d][vo/gpu/opengl]   EGL_GREEN_SIZE=0x8
+[   0.067][d][vo/gpu/opengl]   EGL_BLUE_SIZE=0x8
+[   0.067][d][vo/gpu/opengl]   EGL_ALPHA_SIZE=0x0
+[   0.067][d][vo/gpu/opengl]   EGL_COLOR_BUFFER_TYPE=0x308e
+[   0.067][d][vo/gpu/opengl]   EGL_CONFIG_CAVEAT=0x3038
+[   0.067][d][vo/gpu/opengl]   EGL_CONFORMANT=0x4d
+[   0.067][d][vo/gpu/opengl]   EGL_NATIVE_VISUAL_ID=0x34325258
+[   0.091][v][vo/gpu/wayland] GL_VERSION='4.5 (Core Profile) Mesa 26.0.8-1ubuntu0.3'
+[   0.091][v][vo/gpu/wayland] Detected desktop OpenGL 4.5.
+[   0.091][v][vo/gpu/wayland] GL_VENDOR='Mesa'
+[   0.091][v][vo/gpu/wayland] GL_RENDERER='llvmpipe (LLVM 21.1.8, 256 bits)'
+[   0.091][v][vo/gpu/wayland] GL_SHADING_LANGUAGE_VERSION='4.50'
+[   0.091][d][vo/gpu/wayland] Combined OpenGL extensions string:
+[   0.091][d][vo/gpu/wayland] EGL_ANDROID_blob_cache EGL_EXT_buffer_age EGL_EXT_config_select_group EGL_EXT_create_context_robustness EGL_EXT_image_dma_buf_import EGL_EXT_image_dma_buf_import_modifiers EGL_EXT_present_opaque EGL_EXT_query_reset_notification_strategy EGL_EXT_surface_compression EGL_EXT_swap_buffers_with_damage EGL_KHR_cl_event2 EGL_KHR_config_attribs EGL_KHR_context_flush_control EGL_KHR_create_context EGL_KHR_create_context_no_error EGL_KHR_fence_sync EGL_KHR_get_all_proc_addresses EGL_KHR_gl_colorspace EGL_KHR_gl_renderbuffer_image EGL_KHR_gl_texture_2D_image EGL_KHR_gl_texture_3D_image EGL_KHR_gl_texture_cubemap_image EGL_KHR_image_base EGL_KHR_no_config_context EGL_KHR_reusable_sync EGL_KHR_surfaceless_context EGL_KHR_swap_buffers_with_damage EGL_EXT_pixel_format_float EGL_KHR_wait_sync EGL_MESA_configless_context EGL_MESA_gl_interop EGL_MESA_query_driver EGL_MESA_x11_native_visual_id  GL_3DFX_texture_compression_FXT1 GL_AMD_conservative_depth GL_AMD_draw_buffers_blend GL_AMD_gpu_shader_int64 GL_AMD_multi_draw_indirect GL_AMD_pinned_memory GL_AMD_query_buffer_object GL_AMD_seamless_cubemap_per_texture GL_AMD_shader_stencil_export GL_AMD_shader_trinary_minmax GL_AMD_texture_texture4 GL_AMD_vertex_shader_layer GL_AMD_vertex_shader_viewport_index GL_ANGLE_texture_compression_dxt3 GL_ANGLE_texture_compression_dxt5 GL_ARB_ES2_compatibility GL_ARB_ES3_1_compatibility GL_ARB_ES3_2_compatibility GL_ARB_ES3_compatibility GL_ARB_arrays_of_arrays GL_ARB_base_instance GL_ARB_blend_func_extended GL_ARB_buffer_storage GL_ARB_clear_buffer_object GL_ARB_clear_texture GL_ARB_clip_control GL_ARB_compressed_texture_pixel_storage GL_ARB_compute_shader GL_ARB_conditional_render_inverted GL_ARB_conservative_depth GL_ARB_copy_buffer GL_ARB_copy_image GL_ARB_cull_distance GL_ARB_debug_output GL_ARB_depth_buffer_float GL_ARB_depth_clamp GL_ARB_derivative_control GL_ARB_direct_state_access GL_ARB_draw_buffers GL_ARB_draw_buffers_blend GL_ARB_draw_elements_base_vertex GL_ARB_draw_indirect GL_ARB_draw_instanced GL_ARB_enhanced_layouts GL_ARB_explicit_attrib_location GL_ARB_explicit_uniform_location GL_ARB_fragment_coord_conventions GL_ARB_fragment_layer_viewport GL_ARB_fragment_shader GL_ARB_framebuffer_no_attachments GL_ARB_framebuffer_object GL_ARB_framebuffer_sRGB GL_ARB_get_program_binary GL_ARB_get_texture_sub_image GL_ARB_gl_spirv GL_ARB_gpu_shader5 GL_ARB_gpu_shader_fp64 GL_ARB_gpu_shader_int64 GL_ARB_half_float_pixel GL_ARB_half_float_vertex GL_ARB_indirect_parameters GL_ARB_instanced_arrays GL_ARB_internalformat_query GL_ARB_internalformat_query2 GL_ARB_invalidate_subdata GL_ARB_map_buffer_alignment GL_ARB_map_buffer_range GL_ARB_multi_bind GL_ARB_multi_draw_indirect GL_ARB_occlusion_query2 GL_ARB_parallel_shader_compile GL_ARB_pipeline_statistics_query GL_ARB_pixel_buffer_object GL_ARB_point_sprite GL_ARB_polygon_offset_clamp GL_ARB_post_depth_coverage GL_ARB_program_interface_query GL_ARB_provoking_vertex GL_ARB_query_buffer_object GL_ARB_robust_buffer_access_behavior GL_ARB_robustness GL_ARB_sample_locations GL_ARB_sample_shading GL_ARB_sampler_objects GL_ARB_seamless_cube_map GL_ARB_seamless_cubemap_per_texture GL_ARB_separate_shader_objects GL_ARB_shader_atomic_counter_ops GL_ARB_shader_atomic_counters GL_ARB_shader_ballot GL_ARB_shader_bit_encoding GL_ARB_shader_clock GL_ARB_shader_draw_parameters GL_ARB_shader_group_vote GL_ARB_shader_image_load_store GL_ARB_shader_image_size GL_ARB_shader_objects GL_ARB_shader_precision GL_ARB_shader_stencil_export GL_ARB_shader_storage_buffer_object GL_ARB_shader_subroutine GL_ARB_shader_texture_image_samples GL_ARB_shader_texture_lod GL_ARB_shader_viewport_layer_array GL_ARB_shading_language_420pack GL_ARB_shading_language_include GL_ARB_shading_language_packing GL_ARB_spirv_extensions GL_ARB_stencil_texturing GL_ARB_sync GL_ARB_tessellation_shader GL_ARB_texture_barrier GL_ARB_texture_border_clamp GL_ARB_texture_buffer_object GL_ARB_texture_buffer_object_rgb32 GL_ARB_texture_buffer_range GL_ARB_texture_compression_bptc GL_ARB_texture_compression_rgtc GL_ARB_texture_cube_map_array GL_ARB_texture_filter_anisotropic GL_ARB_texture_filter_minmax GL_ARB_texture_float GL_ARB_texture_gather GL_ARB_texture_mirror_clamp_to_edge GL_ARB_texture_multisample GL_ARB_texture_non_power_of_two GL_ARB_texture_query_levels GL_ARB_texture_query_lod GL_ARB_texture_rectangle GL_ARB_texture_rg GL_ARB_texture_rgb10_a2ui GL_ARB_texture_stencil8 GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_texture_swizzle GL_ARB_texture_view GL_ARB_timer_query GL_ARB_transform_feedback2 GL_ARB_transform_feedback3 GL_ARB_transform_feedback_instanced GL_ARB_transform_feedback_overflow_query GL_ARB_uniform_buffer_object GL_ARB_vertex_array_bgra GL_ARB_vertex_array_object GL_ARB_vertex_attrib_64bit GL_ARB_vertex_attrib_binding GL_ARB_vertex_buffer_object GL_ARB_vertex_shader GL_ARB_vertex_type_10f_11f_11f_rev GL_ARB_vertex_type_2_10_10_10_rev GL_ARB_viewport_array GL_ARM_shader_framebuffer_fetch_depth_stencil GL_ATI_blend_equation_separate GL_ATI_meminfo GL_ATI_texture_float GL_ATI_texture_mirror_once GL_EXT_EGL_image_storage GL_EXT_EGL_image_storage_compression GL_EXT_EGL_sync GL_EXT_abgr GL_EXT_blend_equation_separate GL_EXT_debug_label GL_EXT_depth_bounds_test GL_EXT_draw_buffers2 GL_EXT_draw_instanced GL_EXT_framebuffer_blit GL_EXT_framebuffer_multisample GL_EXT_framebuffer_multisample_blit_scaled GL_EXT_framebuffer_object GL_EXT_framebuffer_sRGB GL_EXT_memory_object GL_EXT_memory_object_fd GL_EXT_packed_depth_stencil GL_EXT_packed_float GL_EXT_pixel_buffer_object GL_EXT_polygon_offset_clamp GL_EXT_provoking_vertex GL_EXT_shader_clock GL_EXT_shader_framebuffer_fetch GL_EXT_shader_framebuffer_fetch_non_coherent GL_EXT_shader_image_load_formatted GL_EXT_shader_integer_mix GL_EXT_texture_array GL_EXT_texture_compression_dxt1 GL_EXT_texture_compression_rgtc GL_EXT_texture_compression_s3tc GL_EXT_texture_filter_anisotropic GL_EXT_texture_filter_minmax GL_EXT_texture_integer GL_EXT_texture_mirror_clamp GL_EXT_texture_sRGB GL_EXT_texture_sRGB_R8 GL_EXT_texture_sRGB_RG8 GL_EXT_texture_sRGB_decode GL_EXT_texture_shadow_lod GL_EXT_texture_shared_exponent GL_EXT_texture_snorm GL_EXT_texture_storage GL_EXT_texture_swizzle GL_EXT_timer_query GL_EXT_transform_feedback GL_EXT_vertex_array_bgra GL_EXT_vertex_attrib_64bit GL_IBM_multimode_draw_arrays GL_INTEL_shader_atomic_float_minmax GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent GL_KHR_context_flush_control GL_KHR_debug GL_KHR_no_error GL_KHR_parallel_shader_compile GL_KHR_robust_buffer_access_behavior GL_KHR_robustness GL_KHR_texture_compression_astc_ldr GL_KHR_texture_compression_astc_sliced_3d GL_MESA_framebuffer_flip_y GL_MESA_pack_invert GL_MESA_shader_integer_functions GL_MESA_texture_signed_rgba GL_NVX_gpu_memory_info GL_NV_alpha_to_coverage_dither_control GL_NV_conditional_render GL_NV_copy_image GL_NV_depth_clamp GL_NV_packed_depth_stencil GL_NV_sample_locations GL_NV_shader_atomic_float GL_NV_texture_barrier GL_OES_EGL_image GL_OVR_multiview GL_OVR_multiview2 GL_S3_s3tc
+[   0.091][v][vo/gpu/wayland] Loaded extension GL_KHR_debug.
+[   0.091][v][vo/gpu/wayland] Detected suspected software renderer.
+[   0.091][w][vo/gpu/opengl] Suspected software renderer or indirect context.
+[   0.091][v][vo/gpu/opengl] Initializing GPU context 'x11egl'

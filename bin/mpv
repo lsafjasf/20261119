@@ -1,0 +1,5 @@
+#!/bin/bash
+ROOT="/home/hj/userfeedback/uid4-0014/dl/root"
+export LD_LIBRARY_PATH="$ROOT/usr/lib/x86_64-linux-gnu:$ROOT/lib/x86_64-linux-gnu:$ROOT/usr/lib:${LD_LIBRARY_PATH:-}"
+export FONTCONFIG_PATH="$ROOT/etc/fonts"
+exec "$ROOT/usr/bin/mpv" "$@"

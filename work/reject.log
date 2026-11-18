@@ -1,0 +1,1 @@
+错误: 视频编码 h264 不在 WebM 白名单(vp8 vp9 av1)内，拒绝封装且不会转码: samples/unsupported_h264_videoonly.mp4
