@@ -1,0 +1,12 @@
+{
+  "source": "work/source.mp4",
+  "output": "out/freeze_mute_2s.mp4",
+  "freeze_at": 4.0,
+  "freeze_duration": 2.0,
+  "audio": "mute",
+  "fps": 30.0,
+  "snapped_freeze_at": 4.0,
+  "actual_hold_duration": 2.0,
+  "has_audio": true,
+  "filtergraph": "[0:v]split=2[vsrc_pre][vsrc_rest];[vsrc_pre]trim=0:4.000000000,setpts=PTS-STARTPTS[vpre];[vsrc_rest]trim=start_frame=120,setpts=PTS-STARTPTS[vrest];[vrest]split=2[vfreeze_src][vpost];[vfreeze_src]trim=end_frame=1,setpts=PTS-STARTPTS,loop=loop=59:size=1:start=0,setpts=N/((30/1)*TB)[vfreeze];[vpre][vfreeze][vpost]concat=n=3:v=1:a=0[vout];[0:a]asplit=2[apre_src][apost_src];[apre_src]atrim=0:4.000000000,asetpts=PTS-STARTPTS[apre];[apost_src]atrim=start=4.000000000,asetpts=PTS-STARTPTS[apost];anullsrc=r=48000:cl=mono:d=2.000000000[asilence];[apre][asilence][apost]concat=n=3:v=0:a=1[aout]"
+}
