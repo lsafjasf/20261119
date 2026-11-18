@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频访问单元依赖图</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>视频访问单元依赖图</h1>
+    <label>数据集：
+      <select id="datasetSelect"></select>
+    </label>
+  </header>
+  <main>
+    <section id="graphPane">
+      <svg id="graph" role="img" aria-label="帧依赖图"></svg>
+      <div id="legend">
+        <span class="lg i">I 帧</span>
+        <span class="lg p">P 帧</span>
+        <span class="lg b">B 帧</span>
+        <span class="lg cycle">依赖环</span>
+        <span class="lg orphan">孤儿帧</span>
+        <span class="lg impact">受影响</span>
+      </div>
+    </section>
+    <aside id="sidePane">
+      <section id="reports">
+        <h2>结构报告</h2>
+        <div id="reportBody"></div>
+      </section>
+      <section id="detail">
+        <h2>帧详情</h2>
+        <div id="detailBody"><p class="hint">点击图中任意帧查看详情</p></div>
+      </section>
+    </aside>
+  </main>
+  <script src="data.js"></script>
+  <script src="graph.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

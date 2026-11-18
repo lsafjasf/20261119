@@ -1,0 +1,85 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #0f1420;
+  color: #e6e9f0;
+}
+header {
+  display: flex; align-items: center; gap: 24px;
+  padding: 12px 20px; background: #171e30; border-bottom: 1px solid #2a3550;
+}
+header h1 { font-size: 18px; margin: 0; }
+select {
+  background: #0f1420; color: #e6e9f0;
+  border: 1px solid #3a4767; border-radius: 6px; padding: 4px 8px;
+}
+main { display: flex; height: calc(100vh - 53px); }
+#graphPane { flex: 1; position: relative; overflow: auto; }
+#graph { width: 100%; height: 100%; }
+#sidePane {
+  width: 380px; border-left: 1px solid #2a3550;
+  overflow-y: auto; padding: 14px; background: #131a2b;
+}
+#sidePane h2 { font-size: 14px; margin: 0 0 8px; color: #8fa3c8; }
+#reports, #detail { margin-bottom: 18px; }
+.hint { color: #6b7a99; font-size: 13px; }
+
+#legend {
+  position: absolute; left: 12px; bottom: 12px;
+  display: flex; gap: 10px; font-size: 12px;
+  background: rgba(19,26,43,.9); padding: 6px 10px; border-radius: 8px;
+}
+.lg::before {
+  content: ""; display: inline-block; width: 10px; height: 10px;
+  border-radius: 50%; margin-right: 4px; vertical-align: -1px;
+}
+.lg.i::before { background: #34c98e; }
+.lg.p::before { background: #4f9cf9; }
+.lg.b::before { background: #f5a742; }
+.lg.cycle::before { background: transparent; border: 2px solid #ff5d6c; }
+.lg.orphan::before { background: transparent; border: 2px dashed #9aa5b8; }
+.lg.impact::before { background: #ff5d6c; }
+
+/* 图节点与边 */
+.edge { stroke: #54648a; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+.edge.ref { stroke: #7fd4a8; }
+.edge.dep { stroke: #f9b14f; }
+.edge.impact { stroke: #ff5d6c; }
+.edge.unresolved { stroke: #ff5d6c; stroke-dasharray: 5 4; marker-end: url(#arrowRed); }
+.node { cursor: pointer; }
+.node circle { stroke-width: 2.5; }
+.node.selected circle { stroke: #ffffff; stroke-width: 3.5; }
+.node.cycle circle { stroke: #ff5d6c; }
+.node.orphan circle { stroke: #9aa5b8; stroke-dasharray: 4 3; }
+.node.impact circle { fill: #ff5d6c; }
+.node.dim { opacity: .35; }
+.node text { fill: #0f1420; font-size: 12px; font-weight: 700; text-anchor: middle; pointer-events: none; }
+.node .poc-label { fill: #8fa3c8; font-size: 11px; font-weight: 400; }
+.badge { font-size: 13px; }
+
+/* 报告与详情 */
+.ok { color: #34c98e; }
+.warn { color: #f5a742; }
+.err { color: #ff5d6c; }
+#reportBody ul, #detailBody ul { margin: 4px 0 10px; padding-left: 18px; font-size: 13px; }
+#reportBody li, #detailBody li { margin: 3px 0; }
+code {
+  background: #1d2740; padding: 1px 5px; border-radius: 4px;
+  font-size: 12px; color: #a9c1f5;
+}
+table.order { border-collapse: collapse; font-size: 12px; width: 100%; }
+table.order td, table.order th {
+  border: 1px solid #2a3550; padding: 3px 6px; text-align: center;
+}
+table.order th { color: #8fa3c8; }
+td.cur { background: #2a3550; font-weight: 700; }
+button.danger {
+  background: #ff5d6c; color: #fff; border: 0; border-radius: 6px;
+  padding: 6px 12px; cursor: pointer; font-size: 13px; margin-top: 6px;
+}
+button.ghost {
+  background: transparent; color: #8fa3c8; border: 1px solid #3a4767;
+  border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px;
+  margin-top: 6px; margin-left: 6px;
+}
