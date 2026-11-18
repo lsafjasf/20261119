@@ -1,0 +1,15 @@
+{
+  "name": "tape-reverse-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Block-wise tape reverse effect for uncompressed PCM WAV audio.",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --expose-gc --test",
+    "test:memory": "node --expose-gc benchmark/memory.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

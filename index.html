@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="分块读取未压缩 PCM 的磁带倒放效果器，支持整段与区间倒放。"
+    />
+    <title>倒带实验室 · Tape Reverse</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="masthead">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">↶</span>
+          <div>
+            <p class="eyebrow">PCM TAPE PROCESSOR / 01</p>
+            <h1>倒带实验室</h1>
+          </div>
+        </div>
+        <div class="format-readout" id="format-readout">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">等待载入未压缩 WAV</span>
+        </div>
+      </header>
+
+      <section class="workspace" id="workspace">
+        <div class="deck">
+          <div class="deck-topline">
+            <div class="file-identity">
+              <span class="reel" aria-hidden="true"></span>
+              <div>
+                <p class="label">SOURCE TAPE</p>
+                <p class="file-name" id="file-name">NO TAPE LOADED</p>
+              </div>
+            </div>
+            <div class="mode-switch" role="group" aria-label="倒放模式">
+              <button class="mode-button is-active" data-mode="full" type="button">
+                整段倒放
+              </button>
+              <button class="mode-button" data-mode="region" type="button">
+                区间倒放
+              </button>
+            </div>
+          </div>
+
+          <div class="wave-stage">
+            <canvas id="waveform" aria-label="源音频波形"></canvas>
+            <canvas id="wave-overlay" aria-hidden="true"></canvas>
+            <div class="stage-empty" id="stage-empty">
+              <div class="empty-reels" aria-hidden="true">
+                <span></span><span></span>
+              </div>
+              <strong>放入一盘声音</strong>
+              <p>拖入未压缩 PCM WAV，或从磁盘选择</p>
+              <button class="button button-primary" id="browse-button" type="button">
+                选择 WAV
+              </button>
+              <small>8 / 16 / 24 / 32-bit integer · 32 / 64-bit float</small>
+            </div>
+            <div class="scan-progress" id="scan-progress" hidden>
+              <span id="scan-label">扫描波形</span>
+              <div class="scan-track"><i id="scan-fill"></i></div>
+            </div>
+          </div>
+
+          <div class="timeline-meta">
+            <span id="region-summary">整段 · 00:00.000</span>
+            <span id="wave-hint">拖动波形选择区间 · 单击定位</span>
+          </div>
+
+          <div class="transport">
+            <div class="transport-buttons">
+              <button class="icon-button" id="rewind-button" type="button" aria-label="回到开头">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 5v14M19 6l-9 6 9 6V6z" />
+                </svg>
+              </button>
+              <button class="play-button" id="play-button" type="button" aria-label="播放">
+                <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 5h4v14H7zM14 5h4v14h-4z" />
+                </svg>
+              </button>
+              <button class="icon-button" id="export-button" type="button" aria-label="导出效果 WAV">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="counter-group">
+              <div class="counter">
+                <span>OUTPUT</span>
+                <strong id="output-time">00:00.000</strong>
+              </div>
+              <div class="counter">
+                <span>SOURCE</span>
+                <strong id="source-time">00:00.000</strong>
+              </div>
+              <div class="counter counter-frame">
+                <span>SOURCE FRAME</span>
+                <strong id="source-frame">0</strong>
+              </div>
+            </div>
+
+            <div class="direction-pill" id="direction-pill">
+              <span class="direction-arrow">←</span>
+              <span id="direction-label">REVERSE</span>
+            </div>
+          </div>
+
+          <div class="output-progress" aria-hidden="true">
+            <i id="output-progress-fill"></i>
+          </div>
+        </div>
+
+        <aside class="control-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">TRANSPORT SETTINGS</p>
+              <h2>走带参数</h2>
+            </div>
+            <span class="panel-index">A/02</span>
+          </div>
+
+          <section class="control-section" id="region-controls">
+            <div class="section-title">
+              <span>倒放区间</span>
+              <output id="region-length">整段</output>
+            </div>
+            <label class="range-control">
+              <span>IN <b id="sel-start-time">00:00.000</b></span>
+              <input id="sel-start" type="range" min="0" max="1" value="0" step="1" />
+            </label>
+            <label class="range-control">
+              <span>OUT <b id="sel-end-time">00:00.000</b></span>
+              <input id="sel-end" type="range" min="0" max="1" value="1" step="1" />
+            </label>
+            <div class="selection-note">
+              <span>按完整帧反转</span>
+              <span id="selection-frames">0 frames</span>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <span>分块预读</span>
+              <output>BLOCK I/O</output>
+            </div>
+            <label class="select-control">
+              <span>块大小</span>
+              <select id="block-size">
+                <option value="4096">4,096 frames</option>
+                <option value="16384" selected>16,384 frames</option>
+                <option value="65536">65,536 frames</option>
+                <option value="262144">262,144 frames</option>
+              </select>
+            </label>
+            <label class="select-control">
+              <span>预读深度</span>
+              <select id="prefetch-blocks">
+                <option value="0">关闭</option>
+                <option value="1">1 block</option>
+                <option value="2" selected>2 blocks</option>
+                <option value="4">4 blocks</option>
+                <option value="8">8 blocks</option>
+              </select>
+            </label>
+            <label class="switch-control">
+              <span>
+                <b>循环试听</b>
+                <small>到带尾后自动回到起点</small>
+              </span>
+              <input id="loop-toggle" type="checkbox" />
+              <i aria-hidden="true"></i>
+            </label>
+          </section>
+
+          <section class="control-section memory-section">
+            <div class="section-title">
+              <span>内存窗口</span>
+              <output>LIVE</output>
+            </div>
+            <div class="memory-meter">
+              <div class="memory-copy">
+                <span>预读缓存峰值</span>
+                <strong id="prefetch-peak">0 KiB</strong>
+              </div>
+              <div class="memory-track">
+                <i id="memory-fill"></i>
+              </div>
+            </div>
+            <div class="memory-grid">
+              <div><span>当前持有</span><b id="held-memory">0 KiB</b></div>
+              <div><span>已调度音频</span><b id="scheduled-memory">0 KiB</b></div>
+              <div><span>文件总长</span><b id="file-size">—</b></div>
+              <div><span>帧数</span><b id="frame-total">—</b></div>
+            </div>
+            <p class="memory-note" id="memory-note">
+              音频按块读取，不把整段 PCM 装入内存。
+            </p>
+          </section>
+        </aside>
+      </section>
+
+      <footer class="footer">
+        <span>FRAME-LOCKED · MULTICHANNEL PAIRED · PCM ONLY</span>
+        <span id="footer-format">NO SIGNAL</span>
+      </footer>
+    </main>
+
+    <input id="file-input" type="file" accept=".wav,audio/wav,audio/x-wav" hidden />
+    <div class="toast" id="toast" role="status" hidden></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
