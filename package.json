@@ -1,0 +1,11 @@
+{
+  "name": "spsc-ring-buffer-lab",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "SPSC 实时音频环形缓冲实验：SharedArrayBuffer + 双 Worker",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.mjs"
+  }
+}

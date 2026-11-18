@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>SPSC 实时音频环形缓冲实验</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 24px; background: #14161a; color: #ddd; }
+  h1 { font-size: 20px; }
+  .panel { background: #1d2026; border: 1px solid #2c313a; border-radius: 8px;
+           padding: 14px 18px; margin-bottom: 14px; }
+  button, select { font-size: 14px; padding: 6px 14px; margin-right: 8px;
+                   background: #2b6cb0; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
+  button:disabled { background: #3a3f47; cursor: not-allowed; }
+  select { background: #2c313a; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px 24px; }
+  .stat b { display: inline-block; min-width: 90px; font-size: 18px; }
+  .ok { color: #68d391; } .warn { color: #f6ad55; } .bad { color: #fc8181; }
+  #occ-track { height: 12px; background: #2c313a; border-radius: 6px; overflow: hidden; }
+  #occ-bar { height: 100%; width: 0; background: #68d391; transition: width .1s; }
+  #occ-bar.warn { background: #f6ad55; } #occ-bar.bad { background: #fc8181; }
+  #log { height: 260px; overflow-y: auto; font-family: ui-monospace, monospace;
+         font-size: 12px; line-height: 1.5; }
+  .log-silence { color: #90cdf4; } .log-gap { color: #f6ad55; }
+  .log-error { color: #fc8181; font-weight: bold; }
+  .log-lap, .log-config { color: #68d391; }
+</style>
+</head>
+<body>
+<h1>SPSC 实时音频环形缓冲实验</h1>
+
+<div class="panel">
+  <span id="isolated"></span>
+  <p>生产 Worker 按实时节拍写入带递增序号的 Float32 采样块；消费 Worker 按同样节拍取块。
+     缺数据时输出明确静音标记（seq=-1 全零块），满缓冲时生产者丢块计数。
+     每块经序号 + 样本值校验，证明无重读、无乱序、无未提交读。</p>
+</div>
+
+<div class="panel">
+  <button id="btn-start">启动</button>
+  <button id="btn-pause-producer" disabled>暂停生产者</button>
+  <button id="btn-pause-consumer" disabled>暂停消费者</button>
+  块长：
+  <select id="sel-blocklen" disabled>
+    <option>64</option><option selected>128</option><option>256</option>
+    <option>512</option><option>1024</option>
+  </select>
+</div>
+
+<div class="panel grid stat">
+  <div>已生产块 <b id="stat-written">0</b></div>
+  <div>已消费块 <b id="stat-read">0</b></div>
+  <div>满缓冲丢块 <b id="stat-dropped">0</b></div>
+  <div>静音块输出 <b id="stat-silence">0</b></div>
+  <div>序号缺口(已对账) <b id="stat-gaps">0</b></div>
+  <div>绕回圈数 <b id="stat-laps">0</b></div>
+  <div>校验错误 <b id="stat-errors" class="ok">0</b></div>
+  <div>缓冲占用 <b id="stat-occupancy">0 / 64</b></div>
+</div>
+
+<div class="panel">
+  <div id="occ-track"><div id="occ-bar"></div></div>
+</div>
+
+<div class="panel"><div id="log"></div></div>
+
+<script type="module" src="./main.js"></script>
+</body>
+</html>
