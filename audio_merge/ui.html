@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>音频工程三方合并器</title>
+<style>
+  :root {
+    --bg: #10131a; --panel: #1a1f2b; --panel2: #222838;
+    --line: #2e3648; --text: #e7ebf3; --muted: #93a0b5;
+    --accent: #5b9dff; --warn: #ffb454; --danger: #ff6b6b;
+    --ok: #4cc38a; --left: #7aa7ff; --right: #ff9f7a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 14px/1.5 -apple-system, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+  }
+  header {
+    padding: 14px 22px; background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  header h1 { font-size: 17px; margin: 0; }
+  .badge {
+    padding: 2px 10px; border-radius: 999px; font-size: 12px;
+    background: var(--panel2); border: 1px solid var(--line);
+  }
+  .badge.warn { color: var(--warn); border-color: var(--warn); }
+  .badge.ok { color: var(--ok); border-color: var(--ok); }
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 22px; }
+  .panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px; min-width: 0;
+  }
+  .panel h2 { font-size: 14px; margin: 0 0 10px; color: var(--muted);
+              text-transform: uppercase; letter-spacing: .06em; }
+  .conflict {
+    border: 1px solid var(--line); border-left: 3px solid var(--warn);
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+    background: var(--panel2);
+  }
+  .conflict.resolved { border-left-color: var(--ok); opacity: .92; }
+  .conflict .title { font-weight: 600; margin-bottom: 2px; word-break: break-all; }
+  .conflict .meta { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+  .vals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .val {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px;
+    padding: 6px 8px; min-height: 44px; font-family: ui-monospace, monospace;
+    font-size: 12px; white-space: pre-wrap; word-break: break-word;
+  }
+  .val .cap { display: block; color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+  .val.left { border-color: var(--left); }
+  .val.right { border-color: var(--right); }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  button {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 5px 12px; cursor: pointer; font-size: 13px;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #0b1220; font-weight: 600; }
+  button.danger { border-color: var(--danger); color: var(--danger); }
+  button.picked { outline: 2px solid var(--ok); }
+  pre.tree {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px; max-height: 360px; overflow: auto; margin: 0;
+    font-size: 12px; font-family: ui-monospace, monospace;
+  }
+  .logline { font-family: ui-monospace, monospace; font-size: 12px;
+             color: var(--muted); padding: 1px 0; }
+  .logline .conflict { color: var(--warn); }
+  .logline .resolve { color: var(--ok); }
+  .logline .export { color: var(--accent); }
+  .full { grid-column: 1 / -1; }
+  #banner { margin-left: auto; font-size: 13px; color: var(--muted); }
+  #banner.blocked { color: var(--danger); font-weight: 600; }
+  #banner.ready { color: var(--ok); font-weight: 600; }
+  .empty { color: var(--muted); font-size: 13px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+  .tabs button.active { border-color: var(--accent); color: var(--accent); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>音频工程三方合并器</h1>
+  <span class="badge" id="statConflicts">冲突 —</span>
+  <span class="badge" id="statResolved">已解决 —</span>
+  <span id="banner"></span>
+</header>
+<main>
+  <section class="panel">
+    <h2>冲突逐项处理</h2>
+    <div class="tabs">
+      <button id="btnAll" class="active" onclick="filterConflicts('all')">全部</button>
+      <button id="btnOpen" onclick="filterConflicts('open')">未解决</button>
+      <button class="danger" onclick="bulkResolve('left')">全部取左</button>
+      <button class="danger" onclick="bulkResolve('right')">全部取右</button>
+      <button onclick="resetAll()">重置</button>
+    </div>
+    <div id="conflicts"><p class="empty">加载中…</p></div>
+    <div class="actions">
+      <button class="primary" onclick="exportProject()">导出规范化工程</button>
+      <span class="empty" id="exportHint">未解决冲突存在时导出将被拒绝</span>
+    </div>
+    <p id="exportResult" class="empty"></p>
+  </section>
+  <section class="panel">
+    <h2>合并预览（含自动合并结果）</h2>
+    <pre class="tree" id="tree"></pre>
+  </section>
+  <section class="panel full">
+    <h2>合并日志</h2>
+    <div id="log"></div>
+  </section>
+</main>
+<script>
+let state = null;
+let filter = "all";
+
+async function api(path, payload) {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload || {})
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    alert(data.error || "请求失败");
+    throw new Error(data.error);
+  }
+  return data;
+}
+
+async function refresh() {
+  const res = await fetch("/api/state");
+  state = await res.json();
+  render();
+}
+
+function fmt(value) {
+  if (value && value.__marker__ === "missing") return "∄ 不存在";
+  if (value && value.__marker__ === "deleted") return "✕ 已删除";
+  if (value === undefined) return "∄ 不存在";
+  return JSON.stringify(value, null, 1);
+}
+
+function choiceLabel(choice) {
+  return {left: "采用左分支", right: "采用右分支",
+          base: "恢复祖先版", delete: "确认删除"}[choice] || choice;
+}
+
+function kindLabel(kind) {
+  return {delete_modify: "删除 / 修改冲突",
+          concurrent_edit: "同值异改冲突",
+          concurrent_add: "同时新增冲突"}[kind] || kind;
+}
+
+function render() {
+  renderStats();
+  renderConflicts();
+  renderTree();
+  renderLog();
+}
+
+function renderStats() {
+  const total = state.conflicts.length;
+  const open = state.unresolvedCount;
+  const statC = document.getElementById("statConflicts");
+  const statR = document.getElementById("statResolved");
+  statC.textContent = `冲突 ${total}`;
+  statC.className = "badge " + (open ? "warn" : "ok");
+  statR.textContent = `已解决 ${total - open}/${total}`;
+  const banner = document.getElementById("banner");
+  if (total === 0) {
+    banner.textContent = "无冲突：所有编辑已自动合并，可直接导出";
+    banner.className = "ready";
+  } else if (open === 0) {
+    banner.textContent = "全部冲突已解决，可以导出";
+    banner.className = "ready";
+  } else {
+    banner.textContent = `尚有 ${open} 个未解决冲突，导出已锁定`;
+    banner.className = "blocked";
+  }
+  document.getElementById("exportHint").textContent =
+    open ? "未解决冲突存在时导出将被拒绝" : "点击按钮写入 artifacts/merged_project.json";
+}
+
+function renderConflicts() {
+  const box = document.getElementById("conflicts");
+  const visible = state.conflicts.filter(c =>
+    filter === "all" || c.resolution === null);
+  if (state.conflicts.length === 0) {
+    box.innerHTML = '<p class="empty">没有冲突。两侧编辑互不相交，已自动合并。</p>';
+    return;
+  }
+  if (visible.length === 0) {
+    box.innerHTML = '<p class="empty">当前筛选下没有冲突。</p>';
+    return;
+  }
+  box.innerHTML = visible.map(c => {
+    const choices = ["left", "right", "base"];
+    if (c.kind === "delete_modify") choices.push("delete");
+    const buttons = choices.map(ch => `
+      <button class="${c.resolution === ch ? "picked" : ""}"
+              onclick="resolve('${c.id}','${ch}')">${choiceLabel(ch)}</button>`
+    ).join("");
+    return `
+    <div class="conflict ${c.resolution ? "resolved" : ""}">
+      <div class="title">${c.id} · ${kindLabel(c.kind)}</div>
+      <div class="meta">${c.label} ｜ 路径 ${c.path.join(" → ")}</div>
+      <div class="vals">
+        <div class="val"><span class="cap">共同祖先</span>${fmt(c.base)}</div>
+        <div class="val left"><span class="cap">左分支</span>${fmt(c.left)}</div>
+        <div class="val right"><span class="cap">右分支</span>${fmt(c.right)}</div>
+      </div>
+      <div class="actions">
+        ${buttons}
+        <button onclick="resetOne('${c.id}')">撤销选择</button>
+        ${c.resolution ? `<span class="empty">当前：${choiceLabel(c.resolution)}</span>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function filterConflicts(mode) {
+  filter = mode;
+  document.getElementById("btnAll").classList.toggle("active", mode === "all");
+  document.getElementById("btnOpen").classList.toggle("active", mode === "open");
+  renderConflicts();
+}
+
+async function resolve(conflictId, choice) {
+  state = await api("/api/resolve", {conflictId, choice});
+  render();
+}
+
+async function resetOne(conflictId) {
+  state = await api("/api/reset", {conflictId});
+  render();
+}
+
+async function resetAll() {
+  state = await api("/api/reset", {});
+  document.getElementById("exportResult").textContent = "";
+  render();
+}
+
+async function bulkResolve(choice) {
+  state = await api("/api/resolve-all", {choice});
+  render();
+}
+
+async function exportProject() {
+  const target = document.getElementById("exportResult");
+  try {
+    const data = await api("/api/export", {});
+    target.style.color = "var(--ok)";
+    target.textContent =
+      `已导出：${data.projectPath}（日志：${data.logPath}）`;
+  } catch (err) {
+    target.style.color = "var(--danger)";
+    target.textContent = "导出被拒绝：仍有未解决冲突";
+  }
+}
+
+function renderTree() {
+  const annotated = JSON.parse(JSON.stringify(state.previewTree));
+  annotateConflicts(annotated, state.conflicts);
+  document.getElementById("tree").textContent =
+    JSON.stringify(annotated, null, 2);
+}
+
+function annotateConflicts(node, conflicts) {
+  if (Array.isArray(node)) {
+    node.forEach(child => annotateConflicts(child, conflicts));
+    return;
+  }
+  if (node && typeof node === "object") {
+    if (node.__conflict__) {
+      const conflict = conflicts.find(c => c.id === node.__conflict__);
+      if (conflict) node["⚠ 未解决实体冲突"] = `${conflict.id} ${conflict.label}`;
+    }
+    for (const [key, value] of Object.entries(node)) {
+      if (value && typeof value === "object" && value.__unresolved__) {
+        const conflict = conflicts.find(c => c.id === value.__unresolved__);
+        node[key] = conflict
+          ? `⚠ 未解决: ${conflict.id} ${conflict.kind}`
+          : "⚠ 未解决";
+      } else {
+        annotateConflicts(value, conflicts);
+      }
+    }
+  }
+}
+
+function renderLog() {
+  const box = document.getElementById("log");
+  box.innerHTML = state.log.map(event => {
+    const detail = Object.entries(event)
+      .filter(([key]) => key !== "action")
+      .map(([key, value]) => `${key}=${typeof value === "object"
+        ? JSON.stringify(value) : value}`)
+      .join(" ");
+    return `<div class="logline"><span class="${event.action}">●</span> `
+      + `<b>${event.action}</b> ${escapeHtml(detail)}</div>`;
+  }).join("");
+}
+
+function escapeHtml(text) {
+  return text.replace(/[&<>"]/g, ch =>
+    ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[ch]));
+}
+
+refresh().catch(err => {
+  document.getElementById("conflicts").innerHTML =
+    `<p class="empty">加载失败：${escapeHtml(String(err))}</p>`;
+});
+</body>
+</html>

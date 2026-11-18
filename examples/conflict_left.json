@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "name": "Midnight Drive",
+  "tracks": [
+    {
+      "id": "trk_vox",
+      "name": "Lead Vocal",
+      "params": {
+        "gain_db": 0.0,
+        "pan": -0.25,
+        "effects": {
+          "compressor": {
+            "threshold_db": -18.0,
+            "ratio": 3.0
+          }
+        }
+      },
+      "clips": [
+        {
+          "id": "clip_verse",
+          "name": "Verse Take",
+          "params": {
+            "start_sec": 0.0,
+            "length_sec": 16.0,
+            "fade_in_sec": 0.4
+          }
+        }
+      ]
+    },
+    {
+      "id": "trk_drum",
+      "name": "Drum Bus",
+      "params": {
+        "gain_db": 0.5,
+        "mute": false
+      },
+      "clips": [
+        {
+          "id": "clip_kick",
+          "name": "Kick Loop",
+          "params": {
+            "start_sec": 0.0,
+            "length_sec": 48.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "trk_guitar",
+      "name": "Rhythm Guitar",
+      "params": {
+        "gain_db": -5.0
+      },
+      "clips": [
+        {
+          "id": "clip_riff",
+          "name": "Main Riff",
+          "params": {
+            "start_sec": 8.0,
+            "length_sec": 24.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "trk_bass",
+      "name": "Synth Bass",
+      "params": {
+        "gain_db": -4.0
+      },
+      "clips": [
+        {
+          "id": "clip_bass_a",
+          "name": "Bass A",
+          "params": {
+            "start_sec": 0.0,
+            "length_sec": 32.0
+          }
+        }
+      ]
+    }
+  ]
+}
