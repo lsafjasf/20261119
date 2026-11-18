@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080a0c" />
+    <meta
+      name="description"
+      content="实时分数样本延迟实验台：线性与三阶插值、双读头交叉切换、安全反馈和离线测量。"
+    />
+    <title>Fractional Field — 双读头分数延迟</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-glow" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Fractional Field 首页">
+          <span class="brand-mark" aria-hidden="true">
+            <i></i><i></i><i></i><i></i>
+          </span>
+          <span class="brand-type">FRACTIONAL<br />FIELD</span>
+        </a>
+        <div class="topbar-meta">
+          <span>DSP / 04</span>
+          <span class="topbar-divider"></span>
+          <span>VARIABLE DELAY</span>
+        </div>
+        <div class="engine-pill" id="enginePill" data-state="idle">
+          <span class="engine-led" aria-hidden="true"></span>
+          <span id="enginePillText">ENGINE IDLE</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <div class="eyebrow">
+              <span class="eyebrow-dot" aria-hidden="true"></span>
+              REAL-TIME AUDIO EXPERIMENT
+              <span class="eyebrow-line" aria-hidden="true"></span>
+            </div>
+            <h1>
+              分数样本
+              <span><em>双读头</em>延迟</span>
+            </h1>
+            <p class="hero-lede">
+              在两个分数读头之间无缝切换，让延迟时间成为可听见、可测量的连续变量。
+              观察相位、瞬时有效延迟，以及每一次参数跳变留下的痕迹。
+            </p>
+            <div class="hero-specs" aria-label="关键规格">
+              <div><span>INTERPOLATION</span><strong>LINEAR / CUBIC</strong></div>
+              <div><span>RANGE</span><strong>0.5–480 ms</strong></div>
+              <div><span>FEEDBACK</span><strong>LIMITED ≤ 0.995</strong></div>
+            </div>
+          </div>
+          <div class="hero-graphic" aria-hidden="true">
+            <div class="orbit orbit-a"></div>
+            <div class="orbit orbit-b"></div>
+            <div class="orbit orbit-c"></div>
+            <div class="hero-axis"></div>
+            <span class="orbit-label orbit-label-a">HEAD A</span>
+            <span class="orbit-label orbit-label-b">HEAD B</span>
+            <div class="hero-crosshair"><span></span></div>
+            <div class="hero-graphic-copy">
+              <span>FRACTIONAL<br />DELAY</span>
+              <strong>Δx &lt; 1</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="console" aria-label="延迟效果器控制台">
+          <div class="console-strip">
+            <div class="engine-control">
+              <button class="power-button" id="powerBtn" type="button">
+                <span class="power-icon" aria-hidden="true"></span>
+                <span id="powerLabel">启动引擎</span>
+              </button>
+              <div class="engine-copy">
+                <span class="micro-label">AUDIOWORKLET ENGINE</span>
+                <strong id="engineStatusText">等待用户手势</strong>
+              </div>
+            </div>
+
+            <div class="source-control">
+              <span class="micro-label">SIGNAL SOURCE</span>
+              <div class="segmented source-segmented" id="sourceGroup" role="group" aria-label="信号源">
+                <button type="button" data-source="sine" class="active">220 Hz</button>
+                <button type="button" data-source="sweep">扫频</button>
+                <button type="button" data-source="impulse">冲激</button>
+                <button type="button" data-source="noise">噪声</button>
+              </div>
+              <span class="source-note" id="sourceNote">正弦 · 220 Hz · −11 dBFS</span>
+            </div>
+
+            <div class="transport-control">
+              <button class="text-button" id="pauseBtn" type="button" disabled>
+                <span class="pause-icon" aria-hidden="true"></span>
+                <span id="pauseLabel">暂停</span>
+              </button>
+              <button class="text-button" id="jumpBtn" type="button" disabled>
+                <span class="jump-icon" aria-hidden="true"></span>
+                参数跳变
+              </button>
+              <button class="text-button" id="flushBtn" type="button" disabled>
+                清空缓冲
+              </button>
+            </div>
+          </div>
+
+          <div class="stage-grid">
+            <article class="panel scope-panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="panel-index">A</span>
+                  <h2>实时波形</h2>
+                  <span class="panel-subtitle">INPUT / OUTPUT</span>
+                </div>
+                <div class="legend">
+                  <span><i class="legend-in"></i>输入</span>
+                  <span><i class="legend-out"></i>输出</span>
+                </div>
+              </div>
+              <div class="scope-wrap">
+                <canvas id="scopeCanvas" aria-label="输入与输出实时波形"></canvas>
+                <div class="scope-grid" aria-hidden="true"></div>
+                <div class="scope-tag scope-tag-in">IN</div>
+                <div class="scope-tag scope-tag-out">OUT</div>
+                <div class="scope-paused" id="scopePaused">PAUSED / 缓冲已冻结</div>
+              </div>
+              <div class="panel-footer readouts">
+                <span>IN <strong id="inPeak">−∞</strong> dBFS</span>
+                <span>OUT <strong id="outPeak">−∞</strong> dBFS</span>
+                <span>BLOCK <strong id="blockSerial">000000</strong></span>
+                <span class="footer-spacer"></span>
+                <span class="tiny-note">128 FRAME BLOCKS</span>
+              </div>
+            </article>
+
+            <article class="panel map-panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="panel-index">B</span>
+                  <h2>读写位置</h2>
+                  <span class="panel-subtitle">RING BUFFER / AUTO ZOOM</span>
+                </div>
+                <div class="head-state" id="headState" data-state="idle">
+                  <span class="head-dot"></span>
+                  <span id="headStateText">HEAD A</span>
+                </div>
+              </div>
+              <div class="map-wrap">
+                <canvas id="mapCanvas" aria-label="环形缓冲区读写位置和交叉切换"></canvas>
+                <div class="map-metrics">
+                  <div class="delay-big">
+                    <span>INSTANT EFFECTIVE DELAY</span>
+                    <div><strong id="effectiveDelay">0.00</strong><em>ms</em></div>
+                  </div>
+                  <div class="map-mini-grid">
+                    <div><span>TARGET</span><strong id="targetDelay">0.00 ms</strong></div>
+                    <div><span>WRITE</span><strong id="writePos">0</strong></div>
+                    <div><span>READ A</span><strong id="readPosA">0</strong></div>
+                    <div><span>READ B</span><strong id="readPosB">0</strong></div>
+                  </div>
+                </div>
+              </div>
+              <div class="crossfade-strip">
+                <div class="xfade-labels">
+                  <span class="xfade-a">HEAD A <b id="gainA">100%</b></span>
+                  <span class="xfade-status" id="xfadeStatus">IDLE</span>
+                  <span class="xfade-b">HEAD B <b id="gainB">0%</b></span>
+                </div>
+                <div class="xfade-meter"><span id="xfadeFill"></span></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="controls-grid">
+            <section class="panel control-card delay-card">
+              <div class="card-head">
+                <div>
+                  <span class="panel-index">01</span>
+                  <h3>延迟时间</h3>
+                </div>
+                <label class="number-field">
+                  <input id="delayNumber" type="number" min="0.5" max="480" step="0.1" value="23.4" />
+                  <span>ms</span>
+                </label>
+              </div>
+              <label class="range-label" for="delayRange">
+                <span>目标延迟</span>
+                <span class="range-hint">拖动可实时切换读头</span>
+              </label>
+              <input
+                class="range range-acid"
+                id="delayRange"
+                type="range"
+                min="0.5"
+                max="480"
+                step="0.1"
+                value="23.4"
+              />
+              <div class="range-scale"><span>0.5</span><span>120</span><span>240</span><span>360</span><span>480 ms</span></div>
+              <div class="preset-row" aria-label="延迟预置">
+                <button type="button" data-delay="5">5</button>
+                <button type="button" data-delay="12.5">12.5</button>
+                <button type="button" data-delay="23.4" class="active">23.4</button>
+                <button type="button" data-delay="50">50</button>
+                <button type="button" data-delay="120">120</button>
+                <button type="button" data-delay="300">300</button>
+              </div>
+              <div class="fraction-note">
+                <span>FRACTIONAL PART</span>
+                <strong id="fractionReadout">0.20 samples</strong>
+                <span class="fraction-bar"><i id="fractionFill"></i></span>
+              </div>
+            </section>
+
+            <section class="panel control-card feedback-card">
+              <div class="card-head">
+                <div>
+                  <span class="panel-index">02</span>
+                  <h3>反馈 / 混合</h3>
+                </div>
+                <span class="safety-badge" id="safetyBadge">STABLE</span>
+              </div>
+              <label class="range-label" for="feedbackRange">
+                <span>反馈增益</span>
+                <output id="feedbackValue">0.35</output>
+              </label>
+              <input
+                class="range range-orange"
+                id="feedbackRange"
+                type="range"
+                min="0"
+                max="0.995"
+                step="0.001"
+                value="0.35"
+              />
+              <div class="safety-meter"><span id="safetyFill"></span><i class="safety-limit"></i></div>
+              <div class="range-scale"><span>0.00</span><span>0.50</span><span>0.90</span><span>0.995 MAX</span></div>
+              <label class="range-label compact" for="mixRange">
+                <span>干湿混合</span>
+                <output id="mixValue">100%</output>
+              </label>
+              <input class="range range-neutral" id="mixRange" type="range" min="0" max="100" step="1" value="100" />
+              <p class="card-caption">反馈环路内含 <code>tanh</code> 软饱和、非有限值守卫与输出限幅。</p>
+            </section>
+
+            <section class="panel control-card engine-card">
+              <div class="card-head">
+                <div>
+                  <span class="panel-index">03</span>
+                  <h3>读头引擎</h3>
+                </div>
+                <span class="kernel-badge" id="kernelBadge">CUBIC</span>
+              </div>
+              <div class="segmented interpolation-segmented" id="interpolationGroup" role="group" aria-label="插值方式">
+                <button type="button" data-interp="linear">线性</button>
+                <button type="button" data-interp="cubic" class="active">三阶</button>
+              </div>
+              <p class="interp-copy" id="interpCopy">
+                四点 Lagrange 核，用相邻样本重建分数位置；高频响应更平，但会出现轻微过冲。
+              </p>
+              <label class="range-label compact" for="crossfadeRange">
+                <span>读头交叉淡化</span>
+                <output id="crossfadeValue">28 ms</output>
+              </label>
+              <input
+                class="range range-cyan"
+                id="crossfadeRange"
+                type="range"
+                min="2"
+                max="120"
+                step="1"
+                value="28"
+              />
+              <div class="engine-facts">
+                <div><span>LAW</span><strong>EQUAL-GAIN</strong></div>
+                <div><span>OUTPUT</span><strong>(1−g)·A + g·B</strong></div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="measurement" id="measurement">
+          <div class="measurement-head">
+            <div>
+              <div class="eyebrow">
+                <span class="eyebrow-dot orange" aria-hidden="true"></span>
+                OFFLINE MEASUREMENT / 48 kHz
+              </div>
+              <h2>不是猜测，<em>是测量。</em></h2>
+              <p>
+                三项确定性测试同时运行线性与三阶插值。每项测试独立生成信号、处理、分析，
+                并报告可复现的数值结果。
+              </p>
+            </div>
+            <div class="measure-actions">
+              <span class="measure-timestamp" id="measureTimestamp">尚未运行</span>
+              <button class="run-button" id="runTestsBtn" type="button">
+                <span class="run-icon" aria-hidden="true"></span>
+                重新测量
+              </button>
+            </div>
+          </div>
+
+          <div class="test-grid">
+            <article class="panel test-card" data-test="impulse">
+              <div class="test-head">
+                <span class="test-number">01</span>
+                <div><h3>冲激 / 延迟精度</h3><p>IMPULSE · SUB-SAMPLE ACCURACY</p></div>
+                <span class="test-state" id="impulseState">QUEUED</span>
+              </div>
+              <div class="chart-wrap"><canvas id="impulseChart" aria-label="冲激响应图"></canvas><span class="chart-unit">± 1.6 ms WINDOW</span></div>
+              <div class="metric-table" id="impulseMetrics">
+                <div class="metric-table-head"><span>METRIC</span><span>LINEAR</span><span>CUBIC</span></div>
+                <div><span>目标延迟</span><b>—</b><b>—</b></div>
+                <div><span>测量重心</span><b>—</b><b>—</b></div>
+                <div><span>误差</span><b>—</b><b>—</b></div>
+                <div><span>分数抽头</span><b>—</b><b>—</b></div>
+              </div>
+              <p class="test-caption">脉冲响应的一阶矩用于估计实际延迟，避免仅凭峰值采样点产生半样本误判。</p>
+            </article>
+
+            <article class="panel test-card" data-test="sweep">
+              <div class="test-head">
+                <span class="test-number">02</span>
+                <div><h3>扫频 / 幅频变化</h3><p>LOG SWEEP · MAGNITUDE RESPONSE</p></div>
+                <span class="test-state" id="sweepState">QUEUED</span>
+              </div>
+              <div class="chart-wrap"><canvas id="sweepChart" aria-label="扫频幅频响应图"></canvas><span class="chart-unit">20 Hz – 18 kHz / dB</span></div>
+              <div class="metric-table" id="sweepMetrics">
+                <div class="metric-table-head"><span>METRIC</span><span>LINEAR</span><span>CUBIC</span></div>
+                <div><span>平均偏差</span><b>—</b><b>—</b></div>
+                <div><span>最大偏差</span><b>—</b><b>—</b></div>
+                <div><span>10 kHz 增益</span><b>—</b><b>—</b></div>
+                <div><span>18 kHz 增益</span><b>—</b><b>—</b></div>
+              </div>
+              <p class="test-caption">扫频被切成 Hann 窗帧，在瞬时频率处比较输入/输出幅度，得到插值核的高频衰减。</p>
+            </article>
+
+            <article class="panel test-card" data-test="jump">
+              <div class="test-head">
+                <span class="test-number">03</span>
+                <div><h3>快速跳变 / 不连续峰值</h3><p>PARAM JUMPS · TRANSIENT PEAK</p></div>
+                <span class="test-state" id="jumpState">QUEUED</span>
+              </div>
+              <div class="chart-wrap"><canvas id="jumpChart" aria-label="参数跳变瞬态图"></canvas><span class="chart-unit">8 JUMP EVENTS / NORMALIZED</span></div>
+              <div class="metric-table" id="jumpMetrics">
+                <div class="metric-table-head"><span>METRIC</span><span>LINEAR</span><span>CUBIC</span></div>
+                <div><span>最大 Δ / 基线</span><b>—</b><b>—</b></div>
+                <div><span>增益峰值</span><b>—</b><b>—</b></div>
+                <div><span>发散检查</span><b>—</b><b>—</b></div>
+                <div><span>NaN / Inf</span><b>—</b><b>—</b></div>
+              </div>
+              <p class="test-caption">最大样本差分按稳态正弦斜率归一化；测试反馈固定为 0.995，交叉淡化把目标跳变分散到设定时长内。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="impl-notes" aria-label="实现说明">
+          <div class="impl-intro">
+            <span>UNDER THE HOOD</span>
+            <h2>四个必须做对的细节</h2>
+          </div>
+          <div class="impl-item"><span>01</span><h3>分数读头</h3><p>整数地址与小数相位分离，线性核取两点，三阶核取四点。</p></div>
+          <div class="impl-item"><span>02</span><h3>双头交接</h3><p>目标改变时启用备用读头，等增益淡化结束后原子交换主备身份。</p></div>
+          <div class="impl-item"><span>03</span><h3>反馈穹顶</h3><p>环路软饱和与输入守卫确保高增益下也不会出现指数发散。</p></div>
+          <div class="impl-item"><span>04</span><h3>暂停语义</h3><p>暂停时不写入、不推进源相位；恢复先清空旧块，避免重复消费。</p></div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>FRACTIONAL FIELD / DSP-04</span>
+        <span>AudioWorklet · 128 samples · deterministic test bench</span>
+        <span>BUILT FOR LISTENING &amp; MEASURING</span>
+      </footer>
+    </div>
+
+    <noscript>此实验台需要启用 JavaScript 与 Web Audio。</noscript>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
