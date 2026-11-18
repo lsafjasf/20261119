@@ -1,0 +1,4 @@
+__pycache__/
+*.so
+audio_1h.wav
+peak_index/
