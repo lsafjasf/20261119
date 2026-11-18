@@ -1,0 +1,16 @@
+{
+  "name": "reassigned-spectrogram-analyzer",
+  "version": "1.0.0",
+  "description": "Reassigned spectrogram analyzer with side-by-side STFT display and clickable energy cells",
+  "type": "module",
+  "main": "js/app.js",
+  "scripts": {
+    "test": "node test/run-tests.js",
+    "benchmark": "node test/benchmark.js",
+    "serve": "node test/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

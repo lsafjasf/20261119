@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reassigned Spectrogram Analyzer</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Reassigned Spectrogram Analyzer</h1>
+    <p>Auger–Flandrin reassignment of STFT energy cells. Both panels share the same time (s) and frequency (Hz) axes across all window lengths.</p>
+  </header>
+
+  <section class="controls">
+    <div class="control">
+      <label for="signal-select">Test signal</label>
+      <select id="signal-select">
+        <option value="crossing-chirps">Crossing linear chirps (1–4 kHz)</option>
+        <option value="close-pure-tones">Nearby pure tones (2000 / 2250 Hz)</option>
+        <option value="transient-burst">Transient tone burst (3 kHz, &sigma;=4 ms)</option>
+      </select>
+    </div>
+    <div class="control">
+      <label for="window-select">Analysis window length</label>
+      <select id="window-select"></select>
+    </div>
+    <div class="control">
+      <button id="recompute" type="button">Recompute</button>
+    </div>
+    <div class="note">
+      Hop is fixed at N/4. Changing the window keeps axis units (seconds, Hz) and the
+      0–Nyquist range; only resolution changes.
+    </div>
+  </section>
+
+  <main class="layout">
+    <section class="panels">
+      <div class="panel">
+        <canvas id="stft-canvas"></canvas>
+      </div>
+      <div class="panel">
+        <canvas id="reassigned-canvas"></canvas>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="card">
+        <h3>Cell inspector</h3>
+        <div id="inspector"></div>
+      </div>
+      <div class="card">
+        <h3>Metrics &amp; accounting</h3>
+        <div id="stats"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
