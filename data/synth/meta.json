@@ -1,0 +1,11 @@
+{
+  "n": 120,
+  "h": 240,
+  "w": 320,
+  "fps": 30,
+  "flicker_hz": 4.0,
+  "flicker_amp": 0.18,
+  "step_frame": 70,
+  "step_gain": 1.25,
+  "seed": 7
+}
