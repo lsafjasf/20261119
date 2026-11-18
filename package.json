@@ -1,0 +1,15 @@
+{
+  "name": "grain-field",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A real-time, sample-accurate granular synthesizer for the browser.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "render:demo": "node scripts/render-demo.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0d0c" />
+    <title>Grain Field — Granular Synthesizer</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b100d'/%3E%3Cpath d='M7 22V14M13 24V8M19 21V11M25 20V13' stroke='%23b6f36b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div>
+            <h1>Grain Field</h1>
+            <p>real-time granular instrument</p>
+          </div>
+        </div>
+
+        <div class="transport" role="group" aria-label="Transport">
+          <button class="transport-button primary" id="playBtn" type="button">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8 13 8l-8.5 5.2z"/></svg>
+            <span id="playLabel">Start</span>
+          </button>
+          <button class="transport-button" id="stopBtn" type="button" aria-label="Stop">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="1"/></svg>
+            Stop
+          </button>
+          <div class="engine-badge" id="engineBadge">
+            <i></i><span id="engineMode">engine idle</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="text-button" id="loadBtn" type="button">Load audio</button>
+          <input id="fileInput" type="file" accept="audio/*" hidden />
+          <button class="text-button accent" id="exportBtn" type="button">
+            Export PCM
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 12.5h10"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="visual-column" aria-label="Visualizations">
+          <article class="panel source-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">01 / Source</span>
+                <h2 id="sourceName">Constant tone</h2>
+              </div>
+              <div class="heading-meta">
+                <span id="sourceMeta">2.00 s · mono</span>
+                <span class="tag" id="freezeTag">scanning</span>
+              </div>
+            </div>
+            <div class="wave-wrap">
+              <canvas id="waveCanvas" aria-label="Source waveform. Click to set read position."></canvas>
+              <div class="wave-axis"><span>0:00</span><span id="sourceEndLabel">0:02</span></div>
+            </div>
+            <div class="source-footer">
+              <div class="preset-group" role="group" aria-label="Built-in test sources">
+                <span>Test signal</span>
+                <button class="preset active" type="button" data-source="tone">Constant</button>
+                <button class="preset" type="button" data-source="impulse">Impulse</button>
+              </div>
+              <div class="readout-inline">
+                <span class="dot amber"></span>
+                <span id="positionReadout">read 0.000 s</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel cloud-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">02 / Grain pool</span>
+                <h2>Windowed voices</h2>
+              </div>
+              <div class="pool-status">
+                <span class="pulse-dot"></span>
+                <span id="poolStatus">pool idle</span>
+              </div>
+            </div>
+            <div class="cloud-wrap">
+              <canvas id="grainCanvas" aria-label="Active grain queue and source positions"></canvas>
+              <div class="cloud-grid-label top">source read position →</div>
+              <div class="cloud-empty" id="cloudEmpty">Press Start to emit grains</div>
+            </div>
+            <div class="cloud-legend">
+              <span><i class="legend-active"></i> active grain</span>
+              <span><i class="legend-progress"></i> grain progress</span>
+              <span><i class="legend-frozen"></i> frozen head</span>
+              <span class="legend-note">no pending backlog</span>
+            </div>
+            <div class="metric-grid">
+              <div class="metric">
+                <span class="metric-label">Active / max</span>
+                <strong id="metricActive">0 / 32</strong>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Density</span>
+                <strong id="metricDensity">33.3 Hz</strong>
+              </div>
+              <div class="metric">
+                <span class="metric-label">Window overlap</span>
+                <strong id="metricOverlap">3.00×</strong>
+              </div>
+              <div class="metric metric-alert">
+                <span class="metric-label">Rejected</span>
+                <strong id="metricRejected">0</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel diagnostics-panel">
+            <div class="panel-heading compact">
+              <div>
+                <span class="eyebrow">03 / Validation</span>
+                <h2>DSP diagnostics</h2>
+              </div>
+              <button class="small-button" id="runDiagnostics" type="button">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v3m0 6v3M2 8h3m6 0h3M4 4l2 2m4 4 2 2m0-8-2 2m-4 4-2 2"/></svg>
+                Run checks
+              </button>
+            </div>
+            <div class="diagnostics-grid" id="diagnosticsGrid">
+              <div class="diagnostic pending"><span></span><p>Impulse onset</p><small>not run</small></div>
+              <div class="diagnostic pending"><span></span><p>Hann overlap</p><small>not run</small></div>
+              <div class="diagnostic pending"><span></span><p>Constant tone</p><small>not run</small></div>
+              <div class="diagnostic pending"><span></span><p>Voice cap</p><small>not run</small></div>
+              <div class="diagnostic pending"><span></span><p>Freeze</p><small>not run</small></div>
+            </div>
+          </article>
+        </section>
+
+        <aside class="control-column" aria-label="Synthesizer controls">
+          <section class="control-section position-section">
+            <div class="section-title">
+              <span class="section-index">A</span>
+              <h3>Read head</h3>
+              <span class="section-state" id="freezeState">live</span>
+            </div>
+            <button class="freeze-button" id="freezeBtn" type="button" aria-pressed="false">
+              <span class="freeze-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2v20M4.5 6.5l15 11M19.5 6.5l-15 11M8.5 4l3.5 3 3.5-3M8.5 20l3.5-3 3.5 3"/>
+                </svg>
+              </span>
+              <span><strong>Freeze position</strong><small>Hold the read cursor in place</small></span>
+              <i class="toggle-track"><i></i></i>
+            </button>
+            <label class="control-row" for="positionRange">
+              <span>Position</span>
+              <output id="positionValue">0.000 s</output>
+            </label>
+            <input class="range amber" id="positionRange" type="range" min="0" max="1000" value="0" />
+            <label class="control-row" for="scanRate">
+              <span>Scan rate</span>
+              <output id="scanRateValue">1.00×</output>
+            </label>
+            <input class="range" id="scanRate" type="range" min="-2" max="2" step="0.05" value="1" />
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <span class="section-index">B</span>
+              <h3>Grain shape</h3>
+              <span class="section-state">independent</span>
+            </div>
+            <label class="control-row" for="grainLength">
+              <span>Grain length</span>
+              <output id="grainLengthValue">90 ms</output>
+            </label>
+            <input class="range accent" id="grainLength" type="range" min="10" max="500" step="1" value="90" />
+            <span class="control-hint">Length alone sets each voice's lifetime.</span>
+            <div class="window-label">Window function</div>
+            <div class="window-buttons" id="windowButtons">
+              <button class="window-button active" type="button" data-window="hann">
+                <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M1 22C10 22 12 2 20 2s10 20 19 20"/></svg>
+                Hann
+              </button>
+              <button class="window-button" type="button" data-window="hamming">
+                <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M1 19C9 19 12 4 20 4s11 15 19 15"/></svg>
+                Hamming
+              </button>
+              <button class="window-button" type="button" data-window="triangle">
+                <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M1 22 20 3l19 19"/></svg>
+                Triangle
+              </button>
+              <button class="window-button" type="button" data-window="blackman">
+                <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M1 22C8 22 12 3 20 3s12 19 19 19"/></svg>
+                Blackman
+              </button>
+              <button class="window-button" type="button" data-window="rect">
+                <svg viewBox="0 0 40 24" aria-hidden="true"><path d="M1 4h38v16H1z"/></svg>
+                Rect
+              </button>
+            </div>
+          </section>
+
+          <section class="control-section">
+            <div class="section-title">
+              <span class="section-index">C</span>
+              <h3>Cloud density</h3>
+              <span class="section-state" id="densityState">33.3 /s</span>
+            </div>
+            <label class="control-row" for="emissionInterval">
+              <span>Emission interval</span>
+              <output id="emissionIntervalValue">30 ms</output>
+            </label>
+            <input class="range" id="emissionInterval" type="range" min="3" max="300" step="1" value="30" />
+            <span class="control-hint">Changing interval only changes trigger density; grain length stays fixed.</span>
+            <div class="overlap-readout">
+              <div><span>Overlap</span><strong id="overlapValue">3.00×</strong></div>
+              <div><span>Triggers / sec</span><strong id="triggersValue">33.3</strong></div>
+            </div>
+            <label class="control-row" for="maxVoices">
+              <span>Max active grains</span>
+              <output id="maxVoicesValue">32</output>
+            </label>
+            <input class="range" id="maxVoices" type="range" min="1" max="128" step="1" value="32" />
+          </section>
+
+          <section class="control-section output-section">
+            <div class="section-title">
+              <span class="section-index">D</span>
+              <h3>Output</h3>
+              <span class="section-state" id="activeCountState">0 active</span>
+            </div>
+            <label class="control-row" for="masterGain">
+              <span>Master gain</span>
+              <output id="masterGainValue">−2.0 dB</output>
+            </label>
+            <input class="range" id="masterGain" type="range" min="0" max="1.5" step="0.01" value="0.8" />
+            <button class="export-wide" id="exportWideBtn" type="button">
+              <span>
+                <strong>Render to WAV</strong>
+                <small>Actual synthesized PCM · 16-bit</small>
+              </span>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0 3-3m-3 3L5 7M3 12.5h10"/></svg>
+            </button>
+          </section>
+
+          <section class="policy-card" aria-label="Overload policy">
+            <div class="policy-head">
+              <span class="policy-icon">!</span>
+              <div><strong>Overload policy</strong><span>declared · deterministic</span></div>
+              <code>reject-new</code>
+            </div>
+            <p>At the active-grain cap, incoming triggers are rejected and counted. Nothing is queued, so the backlog can never grow.</p>
+            <div class="policy-stats">
+              <span>rejected <strong id="policyRejected">0</strong></span>
+              <span>queue depth <strong>0</strong></span>
+            </div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog class="export-dialog" id="exportDialog">
+      <form method="dialog">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow">Offline render</span>
+            <h2>Export synthesized PCM</h2>
+          </div>
+          <button class="dialog-close" id="closeExport" value="cancel" aria-label="Close">×</button>
+        </div>
+        <p class="dialog-copy">
+          Renders the current source, read position and grain settings through the same DSP engine as live playback.
+          The output is stereo 16-bit WAV.
+        </p>
+        <label class="control-row" for="exportDuration">
+          <span>Duration</span>
+          <output id="exportDurationValue">8.0 s</output>
+        </label>
+        <input class="range accent" id="exportDuration" type="range" min="1" max="60" step="0.5" value="8" />
+        <div class="export-summary" id="exportSummary"></div>
+        <div class="export-progress" id="exportProgress">
+          <div class="progress-meta"><span id="exportStatus">Ready</span><span id="exportPercent">0%</span></div>
+          <div class="progress-track"><i id="exportProgressBar"></i></div>
+        </div>
+        <div class="dialog-actions">
+          <button class="text-button" id="cancelExport" value="cancel" type="button">Cancel</button>
+          <button class="transport-button primary" id="confirmExport" value="default" type="button">
+            Render &amp; download
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
