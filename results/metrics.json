@@ -1,0 +1,154 @@
+{
+ "A_overlap": [
+  {
+   "mode": "locked",
+   "onset": {
+    "snare": {
+     "mean_ms": 10.408139026533128,
+     "max_ms": 17.12961222110909,
+     "matched": 12,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "hihat": {
+     "mean_ms": 8.943071212290201,
+     "max_ms": 13.82432363981112,
+     "matched": 12,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "kick": {
+     "mean_ms": 8.53223760994583,
+     "max_ms": 12.487310395706608,
+     "matched": 7,
+     "missed": 0,
+     "false_alarms": 1
+    }
+   },
+   "crosstalk_db": {
+    "kick": -23.239383666176305,
+    "snare": -18.106633255887353,
+    "hihat": -18.155147338222147
+   },
+   "snr_db": {
+    "kick": 19.691999188573934,
+    "snare": 16.07167301551629,
+    "hihat": 15.285487365233333
+   },
+   "residual": 0.3185789017413318
+  },
+  {
+   "mode": "retrained",
+   "onset": {
+    "snare": {
+     "mean_ms": 11.3756371368884,
+     "max_ms": 17.278943911849698,
+     "matched": 12,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "hihat": {
+     "mean_ms": 8.943071212290201,
+     "max_ms": 13.82432363981112,
+     "matched": 12,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "kick": {
+     "mean_ms": 16.82507855584798,
+     "max_ms": 27.13010431848062,
+     "matched": 7,
+     "missed": 0,
+     "false_alarms": 2
+    }
+   },
+   "crosstalk_db": {
+    "kick": -25.027251021128215,
+    "snare": -14.861384905127721,
+    "hihat": -17.438239893694416
+   },
+   "snr_db": {
+    "kick": 17.62946569248922,
+    "snare": 14.389139128170822,
+    "hihat": 15.138809704350509
+   },
+   "residual": 0.2965844667878152
+  }
+ ],
+ "B_timbre_drift": [
+  {
+   "mode": "locked",
+   "onset": {
+    "hihat": {
+     "mean_ms": 9.790437670725941,
+     "max_ms": 13.351892656999542,
+     "matched": 6,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "snare": {
+     "mean_ms": 9.898307316873002,
+     "max_ms": 13.59578855891941,
+     "matched": 5,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "kick": {
+     "mean_ms": 7.480341902829491,
+     "max_ms": 11.370327765184207,
+     "matched": 5,
+     "missed": 0,
+     "false_alarms": 0
+    }
+   },
+   "crosstalk_db": {
+    "kick": -35.39337059882502,
+    "snare": -20.017532695570655,
+    "hihat": -27.904126355972977
+   },
+   "snr_db": {
+    "kick": 25.743426038305262,
+    "snare": 21.086801837411713,
+    "hihat": 26.966381808457633
+   },
+   "residual": 0.5320061759818581
+  },
+  {
+   "mode": "retrained",
+   "onset": {
+    "hihat": {
+     "mean_ms": 9.790437670725941,
+     "max_ms": 13.351892656999542,
+     "matched": 6,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "snare": {
+     "mean_ms": 9.898307316873002,
+     "max_ms": 13.59578855891941,
+     "matched": 5,
+     "missed": 0,
+     "false_alarms": 0
+    },
+    "kick": {
+     "mean_ms": 12.124332832534757,
+     "max_ms": 15.61360214441554,
+     "matched": 5,
+     "missed": 0,
+     "false_alarms": 0
+    }
+   },
+   "crosstalk_db": {
+    "kick": -28.805261074952742,
+    "snare": -14.497503163883119,
+    "hihat": -19.848672172917162
+   },
+   "snr_db": {
+    "kick": 19.154671417549274,
+    "snare": 14.769915468477254,
+    "hihat": 19.86782748104545
+   },
+   "residual": 0.34629414919796353
+  }
+ ]
+}
