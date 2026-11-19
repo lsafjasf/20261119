@@ -1,0 +1,57 @@
+{
+  "total_ground_truth": 1412,
+  "total_estimated": 1416,
+  "total_matched": 1380,
+  "recall": 0.9773371104815864,
+  "precision": 0.9745762711864406,
+  "missed": 32,
+  "false_alarms": 36,
+  "octave_errors": 0,
+  "freq_error_cents_mean": 3.0346342105566664,
+  "freq_error_cents_median": 2.492035895625169,
+  "freq_error_cents_p95": 8.734515448400305,
+  "per_segment": {
+    "octave_missing_f0": {
+      "ground_truth_voices": 400,
+      "estimated_voices": 400,
+      "matched": 400,
+      "missed": 0,
+      "false_alarms": 0,
+      "octave_errors": 0,
+      "freq_error_cents_mean": 2.492035895623148,
+      "freq_error_cents_p95": 2.492035895625169
+    },
+    "glide_crossing": {
+      "ground_truth_voices": 400,
+      "estimated_voices": 398,
+      "matched": 371,
+      "missed": 29,
+      "false_alarms": 27,
+      "octave_errors": 0,
+      "freq_error_cents_mean": 5.1670696863098495,
+      "freq_error_cents_p95": 10.65249780263153
+    },
+    "triple": {
+      "ground_truth_voices": 285,
+      "estimated_voices": 285,
+      "matched": 285,
+      "missed": 0,
+      "false_alarms": 0,
+      "octave_errors": 0,
+      "freq_error_cents_mean": 1.8635884579365554,
+      "freq_error_cents_p95": 2.5213810306225035
+    },
+    "after_stop": {
+      "ground_truth_voices": 180,
+      "estimated_voices": 180,
+      "matched": 180,
+      "missed": 0,
+      "false_alarms": 0,
+      "octave_errors": 0,
+      "freq_error_cents_mean": 1.5392863847648262,
+      "freq_error_cents_p95": 2.5213810306225035
+    }
+  },
+  "max_voices": 3,
+  "n_frames": 651
+}

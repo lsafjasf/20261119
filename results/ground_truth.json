@@ -1,0 +1,82 @@
+{
+  "fs": 16000,
+  "duration": 6.6,
+  "sources": [
+    {
+      "name": "oct_low_missingF0",
+      "kind": "static",
+      "f0": 220.0,
+      "active": [
+        0.0,
+        2.2
+      ],
+      "missing_fundamental": true
+    },
+    {
+      "name": "oct_high",
+      "kind": "static",
+      "f0": 440.0,
+      "active": [
+        0.0,
+        2.2
+      ],
+      "missing_fundamental": false
+    },
+    {
+      "name": "glide_down",
+      "kind": "linear",
+      "f0": [
+        320.0,
+        180.0
+      ],
+      "active": [
+        2.2,
+        4.4
+      ],
+      "missing_fundamental": false
+    },
+    {
+      "name": "glide_up",
+      "kind": "linear",
+      "f0": [
+        180.0,
+        320.0
+      ],
+      "active": [
+        2.2,
+        4.4
+      ],
+      "missing_fundamental": false
+    },
+    {
+      "name": "triple_low",
+      "kind": "static",
+      "f0": 150.0,
+      "active": [
+        4.4,
+        6.6
+      ],
+      "missing_fundamental": false
+    },
+    {
+      "name": "triple_mid",
+      "kind": "static",
+      "f0": 261.63,
+      "active": [
+        4.4,
+        6.6
+      ],
+      "missing_fundamental": false
+    },
+    {
+      "name": "triple_stop",
+      "kind": "static",
+      "f0": 392.0,
+      "active": [
+        4.4,
+        5.5
+      ],
+      "missing_fundamental": false
+    }
+  ]
+}
