@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0f14">
+  <title>VectorLab · 运动场分析</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0f14'/%3E%3Cpath d='M6 22 16 9l10 13M10 16h12M16 9v13' fill='none' stroke='%234de8d2' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="VectorLab 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M5 22 16 9l11 13M9 16h14M16 9v13"/></svg>
+        </span>
+        <span class="brand-copy"><strong>VectorLab</strong><small>MOTION FIELD STUDIO</small></span>
+      </a>
+
+      <div class="topbar-center">
+        <span class="eyebrow">基准序列</span>
+        <div class="dataset-tabs" role="tablist" aria-label="基准图像对">
+          <button class="dataset-tab is-active" data-scene="translation" role="tab">平移</button>
+          <button class="dataset-tab" data-scene="rotation" role="tab">旋转</button>
+          <button class="dataset-tab" data-scene="occlusion" role="tab">遮挡</button>
+          <button class="dataset-tab" data-scene="textureless" role="tab">低纹理</button>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-button" id="helpButton" aria-label="查看单位与字段定义" title="单位说明">?</button>
+        <div class="export-wrap">
+          <button class="button button-primary" id="exportButton" aria-expanded="false">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2v10m0 0 4-4m-4 4L6 8M3 15v2h14v-2"/></svg>
+            导出
+          </button>
+          <div class="export-menu" id="exportMenu" hidden>
+            <span class="menu-label">导出当前结果</span>
+            <button data-export="stats-json"><span>运动统计</span><small>JSON · 带单位定义</small></button>
+            <button data-export="field-json"><span>向量场</span><small>JSON · 完整置信数据</small></button>
+            <button data-export="field-csv"><span>向量场</span><small>CSV · 表格分析</small></button>
+            <button data-export="snapshot"><span>运动场快照</span><small>PNG · 当前叠加层</small></button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel control-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">ESTIMATION</span>
+            <h2>运动提取</h2>
+          </div>
+          <span class="live-indicator" title="自动更新已开启"><i></i>实时</span>
+        </div>
+
+        <section class="control-section">
+          <label class="field-label">运动块尺寸 <output id="blockSizeValue">24 px</output></label>
+          <div class="segmented" id="blockSizeControl" aria-label="运动块尺寸">
+            <button data-value="16">16</button>
+            <button data-value="24" class="is-active">24</button>
+            <button data-value="32">32</button>
+          </div>
+          <p class="hint">块越小细节越多，块越大低纹理区域越稳定。</p>
+        </section>
+
+        <section class="control-section">
+          <label class="field-label" for="searchRange">搜索半径 <output id="searchRangeValue">16 px</output></label>
+          <input id="searchRange" class="range" type="range" min="8" max="24" step="2" value="16">
+          <div class="range-scale"><span>8</span><span>24</span></div>
+        </section>
+
+        <section class="control-section">
+          <label class="field-label" for="confidenceThreshold">有效置信阈值 <output id="confidenceValue">0.42</output></label>
+          <input id="confidenceThreshold" class="range" type="range" min="0.1" max="0.9" step="0.01" value="0.42">
+          <div class="range-scale"><span>全部</span><span>严格</span></div>
+        </section>
+
+        <div class="section-rule"></div>
+
+        <section class="control-section">
+          <label class="field-label" for="vectorGain">箭头强度 <output id="vectorGainValue">1.2×</output></label>
+          <input id="vectorGain" class="range" type="range" min="0.4" max="3" step="0.1" value="1.2">
+          <p class="hint">仅改变箭头显示长度，不改变估计值。</p>
+        </section>
+
+        <section class="control-section">
+          <div class="field-label-row">
+            <label class="field-label" for="directionCenter">方向带 <output id="directionValue">全部</output></label>
+            <label class="switch" title="启用方向过滤">
+              <input type="checkbox" id="directionEnabled">
+              <span></span>
+            </label>
+          </div>
+          <input id="directionCenter" class="range" type="range" min="0" max="350" step="10" value="0" disabled>
+          <div class="range-scale"><span>0°</span><span>350°</span></div>
+          <p class="hint">屏幕坐标：0° 向右，90° 向下；显示范围 ±25°。</p>
+        </section>
+
+        <div class="section-rule"></div>
+
+        <section class="control-section">
+          <span class="field-label">叠加层</span>
+          <div class="layer-list">
+            <label class="layer-toggle">
+              <span class="layer-swatch swatch-vector"></span>
+              <span><strong>运动向量</strong><small>按置信度着色</small></span>
+              <input type="checkbox" data-layer="vectors" checked>
+            </label>
+            <label class="layer-toggle">
+              <span class="layer-swatch swatch-confidence"></span>
+              <span><strong>置信掩码</strong><small>低纹理 / 遮挡降权</small></span>
+              <input type="checkbox" data-layer="confidence">
+            </label>
+            <label class="layer-toggle">
+              <span class="layer-swatch swatch-cost"></span>
+              <span><strong>匹配代价</strong><small>归一化 SAD</small></span>
+              <input type="checkbox" data-layer="cost">
+            </label>
+            <label class="layer-toggle">
+              <span class="layer-swatch swatch-occlusion"></span>
+              <span><strong>遮挡边界</strong><small>前后向不一致</small></span>
+              <input type="checkbox" data-layer="occlusion" checked>
+            </label>
+          </div>
+        </section>
+
+        <div class="truth-card">
+          <div class="truth-card-top">
+            <span class="truth-icon">GT</span>
+            <span><strong id="truthTitle">已知真值</strong><small id="truthSubtitle">平移 · dx +14, dy −5</small></span>
+          </div>
+          <p id="truthDescription">合成图像对具有逐像素位移真值，端点误差按块中心计算。</p>
+        </div>
+      </aside>
+
+      <section class="stage">
+        <div class="stage-heading">
+          <div>
+            <div class="breadcrumb"><span>工作区</span><i>/</i><span>SEQUENCE 01</span></div>
+            <h1>相邻帧运动场</h1>
+          </div>
+          <div class="stage-meta">
+            <span class="status-pill"><i></i><span id="framePairLabel">帧 A → 帧 B</span></span>
+            <span class="meta-mono">480 × 270</span>
+          </div>
+        </div>
+
+        <div class="frame-strip">
+          <article class="frame-card">
+            <div class="frame-label"><span>参考帧</span><strong>A</strong><small id="frameATime">t = 0.000 s</small></div>
+            <div class="frame-canvas-wrap"><canvas id="frameACanvas" width="480" height="270"></canvas></div>
+          </article>
+          <div class="frame-connector" aria-hidden="true">
+            <span>Δt</span>
+            <svg viewBox="0 0 42 14"><path d="M1 7h38m-5-5 5 5-5 5"/></svg>
+            <small>1 frame</small>
+          </div>
+          <article class="frame-card">
+            <div class="frame-label"><span>目标帧</span><strong>B</strong><small id="frameBTime">t = 0.042 s</small></div>
+            <div class="frame-canvas-wrap"><canvas id="frameBCanvas" width="480" height="270"></canvas></div>
+          </article>
+        </div>
+
+        <article class="field-card">
+          <div class="field-toolbar">
+            <div class="field-title">
+              <span class="field-dot"></span>
+              <span><strong>运动向量场</strong><small id="fieldSubtitle">块中心采样 · 24 px 块</small></span>
+            </div>
+            <div class="field-tools">
+              <button class="mini-button" id="groundTruthButton" aria-pressed="false">
+                <svg viewBox="0 0 16 16"><path d="M2 12 14 4M8 12l6-5"/></svg>显示真值
+              </button>
+              <span class="tool-divider"></span>
+              <span class="rate-badge" id="processTime">—</span>
+              <button class="icon-button small" id="recomputeButton" aria-label="重新计算" title="重新计算">
+                <svg viewBox="0 0 18 18"><path d="M15 7a6 6 0 1 0 .2 4M15 3v4h-4"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="field-canvas-wrap" id="fieldWrap">
+            <canvas id="fieldCanvas" width="480" height="270" aria-label="运动向量场可视化"></canvas>
+            <div class="canvas-hud hud-left">
+              <span>A → B</span>
+              <strong id="hudBlockSize">BLOCK 24</strong>
+            </div>
+            <div class="canvas-hud hud-right"><span id="hudVectorCount">— VECTORS</span></div>
+            <div class="field-legend" id="fieldLegend">
+              <span class="legend-title">置信度</span>
+              <div class="legend-ramp"></div>
+              <div class="legend-labels"><span>0</span><span>0.5</span><span>1.0</span></div>
+            </div>
+            <div class="selection-tooltip" id="selectionTooltip" hidden></div>
+          </div>
+        </article>
+
+        <div class="stage-footnote">
+          <span><i class="marker marker-cyan"></i>高置信</span>
+          <span><i class="marker marker-amber"></i>低置信 / 遮挡</span>
+          <span><i class="marker marker-magenta"></i>已知真值</span>
+          <span class="coordinate-note">坐标左上原点 · 位移 <b>px / frame pair</b> · +x 向右 · +y 向下</span>
+        </div>
+      </section>
+
+      <aside class="panel inspector-panel">
+        <div class="panel-heading inspector-heading">
+          <div>
+            <span class="eyebrow">VALIDATION</span>
+            <h2>端点误差</h2>
+          </div>
+          <span class="gt-badge" id="gtBadge">GT</span>
+        </div>
+
+        <div class="epe-hero">
+          <div class="epe-ring" id="epeRing" style="--score:0">
+            <div><strong id="meanEpe">—</strong><span>px</span></div>
+          </div>
+          <div class="epe-copy">
+            <span class="metric-label">置信加权 EPE</span>
+            <strong id="epeVerdict">计算中</strong>
+            <p id="epeCaption">仅统计非遮挡、高置信块</p>
+          </div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-cell"><span>P95 误差</span><strong id="p95Epe">—</strong><small>px</small></div>
+          <div class="metric-cell"><span>&lt; 1 px 精度</span><strong id="accuracyRate">—</strong><small>块</small></div>
+        </div>
+
+        <section class="inspector-section">
+          <div class="section-title-row"><span>误差分布</span><small>px · 高置信块</small></div>
+          <canvas id="epeChart" width="260" height="74" aria-label="端点误差分布"></canvas>
+        </section>
+
+        <section class="inspector-section">
+          <div class="section-title-row"><span>运动摘要</span><small id="summaryScope">全部块</small></div>
+          <div class="summary-grid">
+            <div><span>有效向量</span><strong id="validVectors">—</strong><small id="validRatio">—</small></div>
+            <div><span>平均位移</span><strong id="meanMagnitude">—</strong><small>px</small></div>
+            <div><span>主方向</span><strong id="dominantDirection">—</strong><small>屏幕角</small></div>
+            <div><span>遮挡降权</span><strong id="occlusionCount">—</strong><small>块</small></div>
+          </div>
+        </section>
+
+        <section class="inspector-section selection-section">
+          <div class="section-title-row"><span>块检查器</span><small>点击向量场</small></div>
+          <div class="selection-empty" id="selectionEmpty">
+            <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h2v2H8zm6 0h2v2h-2zM8 14h8"/></svg>
+            <span>选择任意运动块查看代价、纹理与置信来源</span>
+          </div>
+          <div class="selection-readout" id="selectionReadout" hidden>
+            <div class="selection-vector"><span id="selectionIndex">块 #—</span><strong id="selectionValue">—</strong></div>
+            <div class="selection-metrics">
+              <div><span>匹配代价</span><b id="selectionMatch">—</b></div>
+              <div><span>纹理度</span><b id="selectionTexture">—</b></div>
+              <div><span>前后向误差</span><b id="selectionFb">—</b></div>
+              <div><span>遮挡权重</span><b id="selectionOcc">—</b></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="unit-callout">
+          <span class="unit-icon">px</span>
+          <div><strong>单位定义</strong><p>向量为块中心从 A 到 B 的位移；1 单位 = 1 像素 / 帧对。</p></div>
+          <button class="text-button" id="unitDetailsButton">详情</button>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="statusbar">
+      <span><i class="status-dot"></i><b id="statusText">就绪</b></span>
+      <span id="statusDetails">合成真值已加载 · 前向/后向块匹配</span>
+      <span class="statusbar-right">RGB → luma · SAD + 多因子置信 · <b id="resolutionText">480 × 270</b></span>
+    </footer>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
+      <span class="eyebrow">REFERENCE</span>
+      <h2 id="modalTitle">字段与单位</h2>
+      <div class="modal-body" id="modalBody"></div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
