@@ -1,0 +1,11 @@
+Noto Sans CJK SC (subset)
+Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name "Source".
+Noto is a trademark of Google LLC.
+
+The font subset in this directory is derived from:
+https://github.com/notofonts/noto-cjk
+
+It is licensed under the SIL Open Font License, Version 1.1:
+https://openfontlicense.org/open-font-license-official-text/
+
+The subset contains only characters used by this demonstration interface.

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Bayer RAW 去马赛克比较器：双线性与边缘导向重建、像素权重探针和伪影分析。"
+    />
+    <title>Bayer Demosaic Lab</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230f151d'/%3E%3Crect x='6' y='6' width='9' height='9' rx='2' fill='%23ff6078'/%3E%3Crect x='17' y='6' width='9' height='9' rx='2' fill='%2342da8c'/%3E%3Crect x='6' y='17' width='9' height='9' rx='2' fill='%2342da8c'/%3E%3Crect x='17' y='17' width='9' height='9' rx='2' fill='%235c96ff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-grid" aria-hidden="true"></div>
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="cfa-red"></span><span class="cfa-green"></span>
+          <span class="cfa-green"></span><span class="cfa-blue"></span>
+        </div>
+        <div>
+          <p class="eyebrow">Color Imaging / RAW Lab</p>
+          <h1>Bayer 去马赛克比较器</h1>
+        </div>
+      </div>
+      <div class="header-status" aria-label="当前状态">
+        <span class="status-pill live" id="status-pill">SYNTHETIC TRUTH</span>
+        <span class="status-pill" id="resolution-pill">144 × 108</span>
+        <span class="status-pill" id="pattern-pill">RGGB</span>
+        <span class="status-pill guarded">OOB GUARD</span>
+      </div>
+      <div class="header-actions">
+        <button class="button ghost" id="export-button" type="button">导出 RAW JSON</button>
+        <button class="button primary" id="import-button" type="button">导入 RAW</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="control-deck" aria-label="实验控制">
+        <div class="control-group">
+          <span class="control-label">数据源</span>
+          <div class="segmented" id="source-control">
+            <button type="button" data-source="synthetic" class="active">合成真值</button>
+            <button type="button" data-source="import">导入数组</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="control-label">传感器采样</span>
+          <div class="segmented" id="sensor-pattern-control">
+            <button type="button" data-pattern="RGGB" class="active">RGGB</button>
+            <button type="button" data-pattern="BGGR">BGGR</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="control-label">RAW 解码声明</span>
+          <div class="segmented" id="declared-pattern-control">
+            <button type="button" data-pattern="RGGB" class="active">RGGB</button>
+            <button type="button" data-pattern="BGGR">BGGR</button>
+          </div>
+        </div>
+        <div class="control-group grow">
+          <span class="control-label">比较视图</span>
+          <div class="segmented wide" id="view-control">
+            <button type="button" data-view="reconstruct" class="active">重建</button>
+            <button type="button" data-view="error">误差 ×7</button>
+            <button type="button" data-view="fringe">彩边</button>
+            <button type="button" data-view="zipper">拉链</button>
+          </div>
+        </div>
+        <div class="control-group channel-control" id="channel-control" hidden>
+          <span class="control-label">误差通道</span>
+          <div class="segmented compact" id="error-channel-control">
+            <button type="button" data-channel="rgb" class="active">RGB</button>
+            <button type="button" data-channel="r">R</button>
+            <button type="button" data-channel="g">G</button>
+            <button type="button" data-channel="b">B</button>
+          </div>
+        </div>
+        <button class="icon-button" id="regenerate-button" type="button" title="重新生成测试场景" aria-label="重新生成测试场景">
+          <span aria-hidden="true">↻</span>
+        </button>
+      </section>
+
+      <div class="pattern-alert" id="pattern-alert" role="alert" hidden>
+        <div class="alert-icon" aria-hidden="true">!</div>
+        <div>
+          <strong>CFA 排列声明不匹配</strong>
+          <p id="pattern-alert-text"></p>
+        </div>
+        <button class="button compact-button" id="fix-pattern-button" type="button">修正声明</button>
+      </div>
+
+      <section class="view-grid" aria-label="重建结果对比">
+        <div class="source-stack">
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <p class="panel-kicker">REFERENCE</p>
+                <h2>真值 RGB</h2>
+              </div>
+              <span class="panel-badge neutral">已知源</span>
+            </header>
+            <div class="canvas-shell tall" data-pick="truth">
+              <canvas id="truth-canvas" aria-label="真值 RGB 图像"></canvas>
+              <div class="crosshair" aria-hidden="true"></div>
+              <div class="panel-empty" id="truth-empty" hidden>无 RGB 真值</div>
+            </div>
+            <footer class="panel-footer">
+              <span>点击任意像素检查采样</span>
+              <span class="mono" id="truth-coordinate">x 72 · y 54</span>
+            </footer>
+          </article>
+
+          <article class="panel raw-panel">
+            <header class="panel-header">
+              <div>
+                <p class="panel-kicker">SINGLE CHANNEL</p>
+                <h2>Bayer RAW 马赛克</h2>
+              </div>
+              <div class="cfa-mini" id="raw-cfa-mini" aria-label="Bayer 排列"></div>
+            </header>
+            <div class="canvas-shell tall" data-pick="raw">
+              <canvas id="raw-canvas" aria-label="单通道 Bayer RAW 图像"></canvas>
+              <div class="crosshair" aria-hidden="true"></div>
+            </div>
+            <footer class="panel-footer">
+              <span id="raw-source-pattern">采样 RGGB</span>
+              <span class="mono" id="raw-value-label">G · 0.412</span>
+            </footer>
+          </article>
+        </div>
+
+        <article class="panel result-panel bilinear-panel">
+          <header class="panel-header">
+            <div>
+              <p class="panel-kicker">BASELINE</p>
+              <h2>双线性重建</h2>
+            </div>
+            <div class="headline-metrics">
+              <span><b id="bilinear-psnr">—</b> dB</span>
+              <span><b id="bilinear-mae">—</b> MAE</span>
+            </div>
+          </header>
+          <div class="canvas-shell result" data-pick="bilinear">
+            <canvas id="bilinear-canvas" aria-label="双线性去马赛克结果"></canvas>
+            <div class="crosshair" aria-hidden="true"></div>
+            <div class="view-stamp" id="bilinear-stamp">RGB</div>
+          </div>
+          <footer class="panel-footer">
+            <span>邻域方向盲平均</span>
+            <span class="mono" id="bilinear-footer">R 6.09 · G 3.18 · B 5.65%</span>
+          </footer>
+        </article>
+
+        <article class="panel result-panel edge-panel">
+          <header class="panel-header">
+            <div>
+              <p class="panel-kicker">EDGE-DIRECTED</p>
+              <h2>边缘导向重建</h2>
+            </div>
+            <div class="headline-metrics">
+              <span><b id="edge-psnr">—</b> dB</span>
+              <span><b id="edge-mae">—</b> MAE</span>
+            </div>
+          </header>
+          <div class="canvas-shell result" data-pick="edge">
+            <canvas id="edge-canvas" aria-label="边缘导向去马赛克结果"></canvas>
+            <div class="crosshair" aria-hidden="true"></div>
+            <div class="view-stamp" id="edge-stamp">RGB</div>
+          </div>
+          <footer class="panel-footer">
+            <span>梯度选择 + 色差校正</span>
+            <span class="mono" id="edge-footer">R 4.09 · G 1.54 · B 3.01%</span>
+          </footer>
+        </article>
+      </section>
+
+      <section class="metrics-grid" aria-label="误差分析">
+        <article class="metrics-card bilinear-card">
+          <header>
+            <div>
+              <p class="panel-kicker">CHANNEL ERROR</p>
+              <h2>双线性误差分解</h2>
+            </div>
+            <span class="panel-badge baseline">基线</span>
+          </header>
+          <div class="metric-row">
+            <div><span>PSNR</span><strong id="bilinear-metric-psnr">—</strong></div>
+            <div><span>彩边像素</span><strong id="bilinear-fringe">—</strong></div>
+            <div><span>拉链指数</span><strong id="bilinear-zipper">—</strong></div>
+            <div><span>边缘像素</span><strong id="bilinear-edges">—</strong></div>
+          </div>
+          <div class="channel-metrics" id="bilinear-channels"></div>
+        </article>
+
+        <article class="metrics-card edge-card">
+          <header>
+            <div>
+              <p class="panel-kicker">CHANNEL ERROR</p>
+              <h2>边缘导向误差分解</h2>
+            </div>
+            <span class="panel-badge improved" id="edge-improvement">—</span>
+          </header>
+          <div class="metric-row">
+            <div><span>PSNR</span><strong id="edge-metric-psnr">—</strong></div>
+            <div><span>彩边像素</span><strong id="edge-fringe">—</strong></div>
+            <div><span>拉链指数</span><strong id="edge-zipper">—</strong></div>
+            <div><span>边缘像素</span><strong id="edge-edges">—</strong></div>
+          </div>
+          <div class="channel-metrics" id="edge-channels"></div>
+        </article>
+      </section>
+
+      <section class="probe-section" aria-labelledby="probe-title">
+        <header class="section-header">
+          <div>
+            <p class="panel-kicker">PIXEL PROBE · 7 × 7</p>
+            <h2 id="probe-title">像素邻域与插值权重</h2>
+          </div>
+          <div class="probe-summary">
+            <span class="mono" id="probe-coordinate">x 73 · y 54</span>
+            <span class="probe-chip" id="probe-cfa">G site</span>
+            <span class="probe-chip" id="probe-raw-value">raw 0.412</span>
+          </div>
+        </header>
+        <div class="probe-layout">
+          <div class="probe-main">
+            <div class="probe-toolbar">
+              <div class="segmented" id="probe-method-control">
+                <button type="button" data-method="bilinear">双线性权重</button>
+                <button type="button" data-method="edge" class="active">边缘导向权重</button>
+              </div>
+              <div class="segmented channel-tabs" id="probe-channel-control">
+                <button type="button" data-channel="R" class="active">R</button>
+                <button type="button" data-channel="G">G</button>
+                <button type="button" data-channel="B">B</button>
+              </div>
+              <span class="weight-sum" id="weight-sum">Σw = 1.0000</span>
+            </div>
+            <div class="neighborhood-wrap">
+              <div class="neighborhood-grid" id="neighborhood-grid" role="grid" aria-label="7乘7像素邻域"></div>
+            </div>
+            <div class="probe-legend">
+              <span><i class="legend-swatch cfa-r"></i>R 采样</span>
+              <span><i class="legend-swatch cfa-g"></i>G 采样</span>
+              <span><i class="legend-swatch cfa-b"></i>B 采样</span>
+              <span><i class="legend-swatch out"></i>越界 / 未采样</span>
+              <span><i class="legend-swatch selected"></i>目标像素</span>
+            </div>
+          </div>
+          <aside class="probe-details">
+            <div class="rgb-readout" id="rgb-readout"></div>
+            <div class="weight-list-wrap">
+              <div class="weight-list-header">
+                <span>主要权重</span>
+                <span id="weight-channel-label">R 通道</span>
+              </div>
+              <ol class="weight-list" id="weight-list"></ol>
+            </div>
+            <p class="probe-note" id="probe-note"></p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>所有邻域读取均经过边界守卫；图像边缘使用有限样本归一化。</span>
+      <span>Bayer 2×2 · Float32 单通道 · 真值驱动误差</span>
+    </footer>
+
+    <dialog class="import-dialog" id="import-dialog">
+      <form method="dialog" class="dialog-panel" id="import-form">
+        <header class="dialog-header">
+          <div>
+            <p class="panel-kicker">IMPORT SINGLE-CHANNEL ARRAY</p>
+            <h2>导入 RAW 数组</h2>
+          </div>
+          <button class="dialog-close" value="cancel" aria-label="关闭" type="submit">×</button>
+        </header>
+        <p class="dialog-help">
+          接受 JSON：<code>{"pattern":"RGGB","width":144,"height":108,"data":[...]}</code>。
+          <code>data</code> 可为长度 <code>width × height</code> 的扁平数组，或二维行数组；0–255 数据会自动归一化。
+        </p>
+        <label class="file-drop">
+          <span>选择 .json 文件</span>
+          <input type="file" id="raw-file-input" accept=".json,application/json,.txt,text/plain" />
+        </label>
+        <label class="textarea-label" for="raw-json-input">或粘贴 JSON</label>
+        <textarea id="raw-json-input" spellcheck="false" placeholder='{"pattern":"RGGB", "width":4, "height":4, "data":[0, 1, ...]}'></textarea>
+        <p class="dialog-error" id="import-error" hidden></p>
+        <footer class="dialog-actions">
+          <button class="button ghost" value="cancel" type="submit">取消</button>
+          <button class="button primary" id="load-raw-button" value="default" type="button">载入数组</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
