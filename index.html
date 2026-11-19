@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="在无有损编码介入的条件下，比较 4:4:4、4:2:2、4:2:0 色度抽样与最近邻/双线性重建的锐边损失。"
+    />
+    <title>Chroma Edge Lab · 色度抽样锐边实验</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-noise" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Chroma Edge Lab 首页">
+        <span class="brand-mark" aria-hidden="true">
+          <i></i><i></i><i></i>
+        </span>
+        <span>CHROMA / EDGE LAB</span>
+      </a>
+      <div class="topbar-meta">
+        <span class="status-dot"></span>
+        <span>BT.601 FULL-RANGE</span>
+        <span class="divider"></span>
+        <span>FLOAT32 PIPELINE</span>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span>01</span> CHROMA SUBSAMPLING BENCH</p>
+          <h1>锐利彩边，<br /><em>在色度抽样后<br />还剩多少？</em></h1>
+          <p class="lede">
+            程序化生成彩条与 1 px 细线，直接操作 Y′CbCr
+            平面。没有 JPEG、没有额外量化，只看色度布局、采样位置与重建核本身造成的颜色损失。
+          </p>
+        </div>
+        <div class="hero-signal" aria-hidden="true">
+          <div class="signal-label">
+            <span>EDGE SIGNAL</span>
+            <span>R / G / B</span>
+          </div>
+          <div class="signal-bars">
+            <i style="--c: #ff4f3d; --h: 76%"></i>
+            <i style="--c: #ffd338; --h: 94%"></i>
+            <i style="--c: #24d67a; --h: 54%"></i>
+            <i style="--c: #1f8fff; --h: 82%"></i>
+            <i style="--c: #ec56d8; --h: 64%"></i>
+            <i style="--c: #ff4f3d; --h: 38%"></i>
+            <i style="--c: #ffd338; --h: 90%"></i>
+            <i style="--c: #24d67a; --h: 48%"></i>
+            <i style="--c: #1f8fff; --h: 74%"></i>
+            <i style="--c: #ec56d8; --h: 58%"></i>
+          </div>
+          <div class="signal-axis">
+            <span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="control-deck" aria-label="实验参数">
+        <div class="control-group pattern-control">
+          <div class="control-label">
+            <span>测试图</span>
+            <span class="control-index">A</span>
+          </div>
+          <div class="segmented" id="pattern-tabs" role="group" aria-label="测试图类型">
+            <button type="button" data-pattern="mixed" class="is-active">复合图</button>
+            <button type="button" data-pattern="bars">彩条</button>
+            <button type="button" data-pattern="lines">细线</button>
+          </div>
+        </div>
+
+        <div class="control-group size-control">
+          <div class="control-label">
+            <span>奇数尺寸</span>
+            <span class="control-index">B</span>
+          </div>
+          <div class="size-fields">
+            <label>
+              <span>W</span>
+              <input id="width-input" type="number" value="193" min="65" max="321" step="2" />
+            </label>
+            <span class="times">×</span>
+            <label>
+              <span>H</span>
+              <input id="height-input" type="number" value="129" min="65" max="217" step="2" />
+            </label>
+            <span class="px">px</span>
+          </div>
+        </div>
+
+        <div class="control-group layout-control">
+          <div class="control-label">
+            <span>检查布局</span>
+            <span class="control-index">C</span>
+          </div>
+          <div class="segmented layout-segmented" id="layout-tabs" role="group" aria-label="色度布局">
+            <button type="button" data-layout="444">4:4:4</button>
+            <button type="button" data-layout="422">4:2:2</button>
+            <button type="button" data-layout="420" class="is-active">4:2:0</button>
+          </div>
+        </div>
+
+        <div class="control-group method-control">
+          <div class="control-label">
+            <span>检查重建</span>
+            <span class="control-index">D</span>
+          </div>
+          <div class="segmented" id="method-tabs" role="group" aria-label="重建方式">
+            <button type="button" data-method="nearest">最近邻</button>
+            <button type="button" data-method="bilinear" class="is-active">双线性</button>
+          </div>
+        </div>
+
+        <button class="regenerate-button" id="regenerate-button" type="button">
+          <span class="regen-icon" aria-hidden="true">↻</span>
+          <span>重绘测试图</span>
+        </button>
+      </section>
+
+      <section class="source-section" aria-labelledby="source-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span>02</span> SOURCE / EDGE MASK</p>
+            <h2 id="source-title">输入不是照片，而是可复现的锐边信号</h2>
+          </div>
+          <p class="section-note">
+            灰白覆盖层标出参与「彩边误差」统计的两像素边界带。细线宽度固定为 1 px，
+            色彩在相邻像素间硬切。
+          </p>
+        </div>
+
+        <div class="source-grid">
+          <article class="source-card">
+            <div class="card-topline">
+              <span>RGB SOURCE</span>
+              <span id="source-dimensions">193 × 129 px</span>
+            </div>
+            <div class="canvas-frame source-frame">
+              <canvas id="source-canvas" aria-label="程序生成的原始测试图"></canvas>
+              <canvas id="edge-canvas" aria-label="彩边统计区域覆盖层"></canvas>
+              <span class="corner-tag">1:1 GENERATED</span>
+            </div>
+            <div class="source-footer">
+              <span><i class="legend-swatch edge"></i>两像素彩边带</span>
+              <label class="switch-label">
+                <input id="mask-toggle" type="checkbox" checked />
+                <span class="switch" aria-hidden="true"></span>
+                显示掩码
+              </label>
+            </div>
+          </article>
+
+          <aside class="source-readout">
+            <div class="readout-item">
+              <span class="readout-label">PATTERN</span>
+              <strong id="pattern-readout">复合锐边图</strong>
+              <p id="pattern-description">彩条 + 单像素竖线/横线，覆盖大面积与高频彩边。</p>
+            </div>
+            <div class="readout-grid">
+              <div class="readout-stat">
+                <span>彩边像素</span>
+                <strong id="edge-pixel-count">—</strong>
+              </div>
+              <div class="readout-stat">
+                <span>边缘覆盖率</span>
+                <strong id="edge-coverage">—</strong>
+              </div>
+              <div class="readout-stat">
+                <span>最大通道跳变</span>
+                <strong id="max-step">—</strong>
+              </div>
+              <div class="readout-stat">
+                <span>尺寸奇偶</span>
+                <strong id="odd-readout">ODD / ODD</strong>
+              </div>
+            </div>
+            <div class="pipeline-card">
+              <div class="pipeline-head">
+                <span>LOSSLESS PIPELINE</span>
+                <span>FLOAT32</span>
+              </div>
+              <div class="pipeline-flow" aria-label="无损处理链">
+                <span>RGB</span><i>→</i><span>Y′ 1:1</span><i>→</i><span>Cb/Cr</span><i>→</i><span>REBUILD</span>
+              </div>
+              <div class="pipeline-bars">
+                <div>
+                  <span>LUMA</span>
+                  <i><b style="width: 100%"></b></i>
+                  <strong>100%</strong>
+                </div>
+                <div>
+                  <span>CHROMA</span>
+                  <i><b id="readout-chroma-bar" style="width: 25.3%"></b></i>
+                  <strong id="readout-chroma-ratio">25.3%</strong>
+                </div>
+              </div>
+            </div>
+            <div class="method-note">
+              <span class="note-cross">+</span>
+              <p>
+                所有计算在浮点 Y′CbCr 上进行；显示画布只负责最后的 8-bit 呈现，
+                误差指标不读取画布，也不经过任何有损编码。
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="matrix-section" aria-labelledby="matrix-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span>03</span> RECONSTRUCTION MATRIX</p>
+            <h2 id="matrix-title">同一张图，六种还原结果</h2>
+          </div>
+          <p class="section-note">
+            行是比较的两种重建核，列是三种色度布局。点击任意结果，可在下方放大检查其
+            Cb / Cr 平面。
+          </p>
+        </div>
+
+        <div class="matrix" id="comparison-matrix">
+          <div class="matrix-corner" aria-hidden="true"></div>
+          <div class="matrix-column-head" data-layout-head="444">
+            <strong>4:4:4</strong>
+            <span>FULL CHROMA</span>
+          </div>
+          <div class="matrix-column-head" data-layout-head="422">
+            <strong>4:2:2</strong>
+            <span>HORIZONTAL ÷2</span>
+          </div>
+          <div class="matrix-column-head" data-layout-head="420">
+            <strong>4:2:0</strong>
+            <span>H ÷2 · V ÷2</span>
+          </div>
+
+          <div class="matrix-row-head">
+            <strong>NEAREST</strong>
+            <span>最近邻</span>
+          </div>
+          <div class="matrix-results" id="matrix-nearest"></div>
+
+          <div class="matrix-row-head">
+            <strong>BILINEAR</strong>
+            <span>双线性</span>
+          </div>
+          <div class="matrix-results" id="matrix-bilinear"></div>
+        </div>
+      </section>
+
+      <section class="inspector-section" aria-labelledby="inspector-title">
+        <div class="section-heading inspector-heading">
+          <div>
+            <p class="eyebrow"><span>04</span> PLANE INSPECTOR</p>
+            <h2 id="inspector-title"><span id="inspector-layout">4:2:0</span> 色度平面</h2>
+          </div>
+          <div class="inspector-state">
+            <span class="method-pill" id="inspector-method-pill">双线性重建</span>
+            <span class="odd-pill">奇数尺寸友好</span>
+          </div>
+        </div>
+
+        <div class="inspector-grid">
+          <div class="plane-stack">
+            <article class="plane-card">
+              <div class="plane-heading">
+                <div>
+                  <span class="plane-name">Cb</span>
+                  <span class="plane-caption">蓝色差</span>
+                </div>
+                <span class="plane-size" id="cb-size">97 × 65</span>
+              </div>
+              <div class="plane-frame">
+                <canvas id="cb-canvas" aria-label="Cb 色度平面"></canvas>
+                <div class="plane-scanline" aria-hidden="true"></div>
+              </div>
+              <div class="plane-footer">
+                <span>128 = NEUTRAL</span>
+                <span class="plane-gradient cb-gradient"><i></i></span>
+                <span>LOW → HIGH</span>
+              </div>
+            </article>
+
+            <article class="plane-card">
+              <div class="plane-heading">
+                <div>
+                  <span class="plane-name">Cr</span>
+                  <span class="plane-caption">红色差</span>
+                </div>
+                <span class="plane-size" id="cr-size">97 × 65</span>
+              </div>
+              <div class="plane-frame">
+                <canvas id="cr-canvas" aria-label="Cr 色度平面"></canvas>
+                <div class="plane-scanline" aria-hidden="true"></div>
+              </div>
+              <div class="plane-footer">
+                <span>128 = NEUTRAL</span>
+                <span class="plane-gradient cr-gradient"><i></i></span>
+                <span>LOW → HIGH</span>
+              </div>
+            </article>
+          </div>
+
+          <aside class="inspector-notes">
+            <div class="sample-spec">
+              <div class="sample-spec-head">
+                <span>SAMPLE GEOMETRY</span>
+                <span class="live-tag"><i></i> LIVE</span>
+              </div>
+              <div class="mini-diagram" id="sample-diagram" aria-label="色度采样位置示意图"></div>
+              <p id="sampling-description">
+                每 2 × 2 个亮度像素取一个色度样本，样本位于像素块几何中心。
+              </p>
+            </div>
+
+            <div class="rule-list">
+              <div class="rule-item">
+                <span class="rule-number">01</span>
+                <div>
+                  <strong>采样位置</strong>
+                  <p id="sample-position-rule">4:2:0 样本位于 2 × 2 亮度块的质心。</p>
+                </div>
+              </div>
+              <div class="rule-item">
+                <span class="rule-number">02</span>
+                <div>
+                  <strong>奇数边界</strong>
+                  <p id="odd-rule">末列/末行只平均实际存在的像素，末样本位置随之收缩。</p>
+                </div>
+              </div>
+              <div class="rule-item">
+                <span class="rule-number">03</span>
+                <div>
+                  <strong>边界延拓</strong>
+                  <p>插值足迹越过平面时复制最外侧样本（clamp / replicate），不补零。</p>
+                </div>
+              </div>
+              <div class="rule-item">
+                <span class="rule-number">04</span>
+                <div>
+                  <strong>重建核</strong>
+                  <p id="method-description">双线性：按真实样本间距做可分离线性插值。</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="plane-metrics">
+              <div>
+                <span>平面样本数</span>
+                <strong id="plane-sample-count">6,305</strong>
+              </div>
+              <div>
+                <span>相对完整色度</span>
+                <strong id="chroma-ratio">25.0%</strong>
+              </div>
+              <div>
+                <span>彩边 ΔE00</span>
+                <strong id="inspector-delta-e">—</strong>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="zoom-section" aria-labelledby="zoom-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span>05</span> EDGE LOUPE</p>
+            <h2 id="zoom-title">把最强彩边放大 8×</h2>
+          </div>
+          <p class="section-note">
+            取边缘掩码中 ΔE00 最大处附近的像素，分别查看原图、重建与放大的颜色误差。
+            灰白叉号表示同一像素位置。
+          </p>
+        </div>
+
+        <div class="loupe-grid">
+          <article class="loupe-card">
+            <div class="loupe-label"><span>SOURCE</span><span>原始</span></div>
+            <canvas id="loupe-source" aria-label="原始图像局部的 8 倍放大"></canvas>
+          </article>
+          <article class="loupe-card">
+            <div class="loupe-label"><span>RECONSTRUCTED</span><span id="loupe-method-label">双线性</span></div>
+            <canvas id="loupe-reconstruction" aria-label="重建图像局部的 8 倍放大"></canvas>
+          </article>
+          <article class="loupe-card error-loupe">
+            <div class="loupe-label"><span>ΔE00 ERROR</span><span>误差放大</span></div>
+            <canvas id="loupe-error" aria-label="颜色误差局部的 8 倍放大"></canvas>
+          </article>
+          <aside class="loupe-readout">
+            <p class="eyebrow">HOT PIXEL</p>
+            <div class="hot-coordinate">
+              <span>x</span><strong id="hot-x">—</strong>
+              <span>y</span><strong id="hot-y">—</strong>
+            </div>
+            <div class="hot-metrics">
+              <div><span>ΔE00</span><strong id="hot-delta-e">—</strong></div>
+              <div><span>RGB Δ</span><strong id="hot-rgb-error">—</strong></div>
+              <div><span>Cb / Cr</span><strong id="hot-chroma">—</strong></div>
+            </div>
+            <p class="hot-note">
+              误差色阶固定为 0–20 ΔE00；越亮表示偏离原始颜色越远。
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="table-section" aria-labelledby="table-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span>06</span> MEASUREMENTS</p>
+            <h2 id="table-title">每个色度平面的真实尺寸与彩边误差</h2>
+          </div>
+          <p class="section-note">
+            ΔE00 取两像素宽彩边掩码的平均值；RGB MAE 为三通道绝对误差均值。
+            尺寸均使用 ceil 规则，奇数输入不会被截断。
+          </p>
+        </div>
+
+        <div class="results-table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>布局</th>
+                <th>Cb 平面</th>
+                <th>Cr 平面</th>
+                <th>重建</th>
+                <th>平均 ΔE00</th>
+                <th>RGB MAE</th>
+                <th>P95 ΔE00</th>
+                <th>最大 ΔE00</th>
+              </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+
+        <div class="methodology">
+          <div class="methodology-title">
+            <span>METHOD</span>
+            <strong>为什么这组数字可复现</strong>
+          </div>
+          <div class="methodology-copy">
+            <p>
+              输入 RGB 由确定性几何函数生成。转换使用 full-range BT.601：
+              Y′ = 0.299R + 0.587G + 0.114B，Cb/Cr 以 128 为中点。
+              色度平面由覆盖区域内像素的算术平均得到，保留 Float32 精度。
+            </p>
+            <p>
+              最近邻重建把每个亮度像素映射到距离最近的色度样本；双线性重建在样本位置之间
+              做可分离插值，并利用实际间距处理奇数尺寸造成的末样本偏移。两种方法均复制边界样本。
+            </p>
+          </div>
+          <div class="methodology-tags">
+            <span>NO JPEG</span>
+            <span>NO 4:2:0 ROUNDTRIP CODEC</span>
+            <span>FLOAT METRICS</span>
+            <span>ODD DIMENSIONS</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>CHROMA / EDGE LAB</span>
+      <span>PROGRAMMATIC SOURCE · LOSSLESS CHROMA TRANSPORT</span>
+      <span id="footer-size">193 × 129 / ODD × ODD</span>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
