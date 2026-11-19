@@ -1,0 +1,7 @@
+sample,category,kernel_centroid_error_px,kernel_peak_error_px,kernel_ncc,reconstruction_psnr_db,reconstruction_relative_error_pct,ringing_index_pct,edge_overshoot_pct,uncertainty_label,uncertainty_score,blurred_psnr_db
+text_straight,text_edges,0.134549,1.000000,0.788888,15.685403,21.626934,21.954066,28.308413,low,0.136463,15.130026
+text_polyline,text_edges,0.411135,2.828427,0.227268,13.117644,29.065842,24.880260,36.280808,low,0.143773,12.944195
+texture_straight,texture_blocks,0.102576,1.000000,0.672255,11.409852,43.355378,26.652175,52.687177,low,0.204022,12.121796
+texture_polyline,texture_blocks,0.566527,2.828427,0.098178,10.843317,46.277484,29.005233,56.082646,medium,0.391413,11.402891
+noise_straight,noise,0.000003,1.000000,0.291759,11.039158,49.086867,120.611314,43.166224,medium,0.321210,11.046116
+low_texture_polyline,low_texture,0.492704,2.828427,0.209153,49.668665,0.649532,0.000000,0.000000,high,0.725085,49.668665

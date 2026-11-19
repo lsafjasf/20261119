@@ -1,0 +1,2605 @@
+{
+  "experiment": {
+    "image_size": 192,
+    "max_kernel_size": 21,
+    "ensemble_members": 5,
+    "solver_config": {
+      "max_iterations": 24,
+      "inner_kernel_steps": 3,
+      "image_reg": 0.02,
+      "image_relax": 0.42,
+      "init_sigma": 2.5,
+      "kernel_step": 0.03,
+      "constraints": "non-negative kernel; sum(kernel)=1"
+    },
+    "solver_boundary": "The estimator receives only the blurred image and max kernel size. Truth trajectories are used after estimation for metrics and figures."
+  },
+  "cases": [
+    {
+      "sample": {
+        "key": "text_straight",
+        "label": "Text edges / straight",
+        "category": "text_edges",
+        "notes": "Crisp glyph and bar edges make horizontal motion observable.",
+        "truth_trajectory_xy": [
+          [
+            -5.5,
+            0.0
+          ],
+          [
+            5.5,
+            0.0
+          ]
+        ],
+        "truth_kernel_size": 13,
+        "observation_noise_sigma": 0.006
+      },
+      "solver_input": {
+        "shape": [
+          192,
+          192
+        ],
+        "max_kernel_size": 21,
+        "initial_kernel_source": "centered_isometric_gaussian",
+        "truth_used_by_solver": false
+      },
+      "kernel_metrics": {
+        "centroid_error_px": 0.134549,
+        "peak_error_px": 1.0,
+        "ncc": 0.788888,
+        "truth_centroid_yx": [
+          10.0,
+          10.0
+        ],
+        "estimate_centroid_yx": [
+          9.869964,
+          10.034555
+        ],
+        "truth_peak_yx": [
+          10,
+          9
+        ],
+        "estimate_peak_yx": [
+          10,
+          10
+        ]
+      },
+      "reconstruction": {
+        "psnr_db": 15.685403,
+        "relative_error_pct": 21.626934,
+        "rmse": 0.16433492,
+        "ringing_index_pct": 21.954066,
+        "edge_overshoot_pct": 28.308413
+      },
+      "blurred_baseline": {
+        "psnr_db": 15.130026,
+        "relative_error_pct": 23.05493,
+        "rmse": 0.17518572,
+        "ringing_index_pct": 21.611094,
+        "edge_overshoot_pct": 29.913052
+      },
+      "uncertainty": {
+        "label": "low",
+        "score": 0.136463,
+        "observability": 0.863081,
+        "centroid_std_px": 0.359314,
+        "ensemble_centroid_std_px": 0.10028,
+        "unidentifiability_floor_px": 0.345037,
+        "centroid_95pct_span_yx": [
+          0.912988,
+          0.744472
+        ],
+        "relative_kernel_std": 0.189406,
+        "ensemble_size": 5,
+        "diagnostics": {
+          "gradient_mean": 0.04797971,
+          "local_structure_coherence": 0.69046443,
+          "normalized_gradient": 1.0,
+          "normalized_coherence": 0.86308053,
+          "ensemble_ambiguity": 0.13528994,
+          "centroid_std_px": 0.35931405,
+          "ensemble_centroid_std_px": 0.10027967,
+          "uncertainty_floor_px": 0.34503706,
+          "relative_kernel_std": 0.18940591,
+          "centroid_95pct_span_y": 0.22291396,
+          "centroid_95pct_span_x": 0.0543975,
+          "ensemble_size": 5.0
+        }
+      },
+      "objective": {
+        "iteration": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "objective": [
+          0.0025010935,
+          0.002191081,
+          0.0016837079,
+          0.0014248067,
+          0.0016972069,
+          0.0033992673,
+          0.0024568045,
+          0.001205402,
+          0.0012470129,
+          0.0012281589,
+          0.001164917,
+          0.0011882822,
+          0.001317462,
+          0.0014733884,
+          0.0013980532,
+          0.0011704576,
+          0.0011686756,
+          0.0012687047,
+          0.0012914924,
+          0.0012293702,
+          0.0011509955,
+          0.0011654226,
+          0.0012422167,
+          0.0012245089
+        ],
+        "data_term": [
+          0.001879708,
+          0.0015258049,
+          0.0009617639,
+          0.0006472418,
+          0.0008692443,
+          0.0025516307,
+          0.0016368968,
+          0.0003479674,
+          0.0003322032,
+          0.0002949049,
+          0.0001980246,
+          0.0002241457,
+          0.000360004,
+          0.0005160647,
+          0.0004455248,
+          0.0002009625,
+          0.0001884238,
+          0.0002939755,
+          0.0003082687,
+          0.0002491708,
+          0.0001638246,
+          0.0001758187,
+          0.0002601438,
+          0.0002351895
+        ],
+        "regularizer": [
+          0.0006213855,
+          0.0006652761,
+          0.0007219439,
+          0.000777565,
+          0.0008279626,
+          0.0008476366,
+          0.0008199077,
+          0.0008574346,
+          0.0009148097,
+          0.000933254,
+          0.0009668924,
+          0.0009641365,
+          0.000957458,
+          0.0009573236,
+          0.0009525284,
+          0.0009694951,
+          0.0009802518,
+          0.0009747292,
+          0.0009832237,
+          0.0009801994,
+          0.0009871709,
+          0.0009896039,
+          0.0009820728,
+          0.0009893193
+        ]
+      },
+      "kernel_evolution_stats": [
+        {
+          "iteration": 0,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 285,
+          "entropy": 4.661303,
+          "peak": 0.02549641
+        },
+        {
+          "iteration": 1,
+          "centroid_y": 10.0041,
+          "centroid_x": 9.99982,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.364807,
+          "peak": 0.02738979
+        },
+        {
+          "iteration": 2,
+          "centroid_y": 9.95791,
+          "centroid_x": 9.99711,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.146099,
+          "peak": 0.0300612
+        },
+        {
+          "iteration": 3,
+          "centroid_y": 10.07909,
+          "centroid_x": 9.98764,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.981957,
+          "peak": 0.03558578
+        },
+        {
+          "iteration": 4,
+          "centroid_y": 9.89236,
+          "centroid_x": 9.99494,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.819531,
+          "peak": 0.04202406
+        },
+        {
+          "iteration": 5,
+          "centroid_y": 10.39137,
+          "centroid_x": 9.99696,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.742004,
+          "peak": 0.04818186
+        },
+        {
+          "iteration": 6,
+          "centroid_y": 9.11347,
+          "centroid_x": 10.01491,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.787137,
+          "peak": 0.05048829
+        },
+        {
+          "iteration": 7,
+          "centroid_y": 10.43334,
+          "centroid_x": 9.99376,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.820375,
+          "peak": 0.05527689
+        },
+        {
+          "iteration": 8,
+          "centroid_y": 10.02188,
+          "centroid_x": 9.99485,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.624838,
+          "peak": 0.06193038
+        },
+        {
+          "iteration": 9,
+          "centroid_y": 9.81579,
+          "centroid_x": 9.99705,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.379217,
+          "peak": 0.0687972
+        },
+        {
+          "iteration": 10,
+          "centroid_y": 10.11105,
+          "centroid_x": 9.99972,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.364151,
+          "peak": 0.07499112
+        },
+        {
+          "iteration": 11,
+          "centroid_y": 10.00945,
+          "centroid_x": 10.00965,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.283029,
+          "peak": 0.08091271
+        },
+        {
+          "iteration": 12,
+          "centroid_y": 9.89099,
+          "centroid_x": 10.00321,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.296466,
+          "peak": 0.08539253
+        },
+        {
+          "iteration": 13,
+          "centroid_y": 10.23463,
+          "centroid_x": 9.98783,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.34162,
+          "peak": 0.08868863
+        },
+        {
+          "iteration": 14,
+          "centroid_y": 9.69927,
+          "centroid_x": 10.01711,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.37358,
+          "peak": 0.09124302
+        },
+        {
+          "iteration": 15,
+          "centroid_y": 10.22776,
+          "centroid_x": 10.00708,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.412482,
+          "peak": 0.09402033
+        },
+        {
+          "iteration": 16,
+          "centroid_y": 9.95387,
+          "centroid_x": 9.96911,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.33875,
+          "peak": 0.09729267
+        },
+        {
+          "iteration": 17,
+          "centroid_y": 9.887,
+          "centroid_x": 10.00244,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.292819,
+          "peak": 0.10017724
+        },
+        {
+          "iteration": 18,
+          "centroid_y": 10.18835,
+          "centroid_x": 10.01751,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.337446,
+          "peak": 0.10245491
+        },
+        {
+          "iteration": 19,
+          "centroid_y": 9.80345,
+          "centroid_x": 9.99454,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.330733,
+          "peak": 0.10495495
+        },
+        {
+          "iteration": 20,
+          "centroid_y": 10.12423,
+          "centroid_x": 9.96867,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.321233,
+          "peak": 0.10752874
+        },
+        {
+          "iteration": 21,
+          "centroid_y": 9.97888,
+          "centroid_x": 10.01159,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.285692,
+          "peak": 0.10990893
+        },
+        {
+          "iteration": 22,
+          "centroid_y": 9.90221,
+          "centroid_x": 9.99964,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.270037,
+          "peak": 0.1117423
+        },
+        {
+          "iteration": 23,
+          "centroid_y": 10.16266,
+          "centroid_x": 9.99187,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.311535,
+          "peak": 0.11317464
+        },
+        {
+          "iteration": 24,
+          "centroid_y": 9.87204,
+          "centroid_x": 10.034,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.317193,
+          "peak": 0.1146818
+        }
+      ],
+      "runtime_seconds": 1.7395,
+      "figure": "figures/text_straight.png"
+    },
+    {
+      "sample": {
+        "key": "text_polyline",
+        "label": "Text edges / polyline",
+        "category": "text_edges",
+        "notes": "The kink in the trajectory adds a second motion direction.",
+        "truth_trajectory_xy": [
+          [
+            -6.0,
+            -2.5
+          ],
+          [
+            -2.0,
+            2.5
+          ],
+          [
+            2.5,
+            1.0
+          ],
+          [
+            6.0,
+            -2.0
+          ]
+        ],
+        "truth_kernel_size": 15,
+        "observation_noise_sigma": 0.006
+      },
+      "solver_input": {
+        "shape": [
+          192,
+          192
+        ],
+        "max_kernel_size": 21,
+        "initial_kernel_source": "centered_isometric_gaussian",
+        "truth_used_by_solver": false
+      },
+      "kernel_metrics": {
+        "centroid_error_px": 0.411135,
+        "peak_error_px": 2.828427,
+        "ncc": 0.227268,
+        "truth_centroid_yx": [
+          10.380292,
+          9.686766
+        ],
+        "estimate_centroid_yx": [
+          10.174965,
+          10.042957
+        ],
+        "truth_peak_yx": [
+          12,
+          8
+        ],
+        "estimate_peak_yx": [
+          10,
+          10
+        ]
+      },
+      "reconstruction": {
+        "psnr_db": 13.117644,
+        "relative_error_pct": 29.065842,
+        "rmse": 0.22086037,
+        "ringing_index_pct": 24.88026,
+        "edge_overshoot_pct": 36.280808
+      },
+      "blurred_baseline": {
+        "psnr_db": 12.944195,
+        "relative_error_pct": 29.652092,
+        "rmse": 0.22531507,
+        "ringing_index_pct": 24.396007,
+        "edge_overshoot_pct": 36.801721
+      },
+      "uncertainty": {
+        "label": "low",
+        "score": 0.143773,
+        "observability": 0.860759,
+        "centroid_std_px": 0.390023,
+        "ensemble_centroid_std_px": 0.170284,
+        "unidentifiability_floor_px": 0.350887,
+        "centroid_95pct_span_yx": [
+          1.093605,
+          0.85591
+        ],
+        "relative_kernel_std": 0.2176,
+        "ensemble_size": 5,
+        "diagnostics": {
+          "gradient_mean": 0.0443931,
+          "local_structure_coherence": 0.68860734,
+          "normalized_gradient": 1.0,
+          "normalized_coherence": 0.86075918,
+          "ensemble_ambiguity": 0.15542884,
+          "centroid_std_px": 0.39002348,
+          "ensemble_centroid_std_px": 0.17028422,
+          "uncertainty_floor_px": 0.35088687,
+          "relative_kernel_std": 0.21760038,
+          "centroid_95pct_span_y": 0.39183094,
+          "centroid_95pct_span_x": 0.15413589,
+          "ensemble_size": 5.0
+        }
+      },
+      "objective": {
+        "iteration": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "objective": [
+          0.001152164,
+          0.001094952,
+          0.0011451576,
+          0.001856799,
+          0.0029911428,
+          0.0017316469,
+          0.0009203591,
+          0.001088651,
+          0.0012421858,
+          0.0014461782,
+          0.0014760181,
+          0.001299734,
+          0.0010435435,
+          0.0009706596,
+          0.0011209557,
+          0.0014378832,
+          0.0016573301,
+          0.0012965682,
+          0.0009795337,
+          0.0011192097,
+          0.0011598428,
+          0.0010422202,
+          0.000975739,
+          0.0010524482
+        ],
+        "data_term": [
+          0.0005732524,
+          0.0004436998,
+          0.0004769351,
+          0.0011555849,
+          0.0022959948,
+          0.0010103526,
+          0.0001404023,
+          0.0002796402,
+          0.0004363231,
+          0.0006411547,
+          0.0006768811,
+          0.0004847946,
+          0.0002206988,
+          0.0001250042,
+          0.0002829718,
+          0.0006143599,
+          0.0008467594,
+          0.0004790995,
+          0.0001353906,
+          0.0002713704,
+          0.0003214132,
+          0.0001984731,
+          0.0001125871,
+          0.0001903408
+        ],
+        "regularizer": [
+          0.0005789115,
+          0.0006512521,
+          0.0006682225,
+          0.0007012141,
+          0.000695148,
+          0.0007212943,
+          0.0007799568,
+          0.0008090108,
+          0.0008058627,
+          0.0008050235,
+          0.0007991371,
+          0.0008149394,
+          0.0008228447,
+          0.0008456554,
+          0.0008379839,
+          0.0008235233,
+          0.0008105707,
+          0.0008174686,
+          0.0008441431,
+          0.0008478393,
+          0.0008384296,
+          0.0008437471,
+          0.0008631519,
+          0.0008621074
+        ]
+      },
+      "kernel_evolution_stats": [
+        {
+          "iteration": 0,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 285,
+          "entropy": 4.661303,
+          "peak": 0.02549641
+        },
+        {
+          "iteration": 1,
+          "centroid_y": 9.94719,
+          "centroid_x": 9.98652,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.396357,
+          "peak": 0.02723841
+        },
+        {
+          "iteration": 2,
+          "centroid_y": 10.09815,
+          "centroid_x": 10.0011,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.069035,
+          "peak": 0.03128405
+        },
+        {
+          "iteration": 3,
+          "centroid_y": 9.76391,
+          "centroid_x": 9.99517,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.109415,
+          "peak": 0.03590715
+        },
+        {
+          "iteration": 4,
+          "centroid_y": 10.64005,
+          "centroid_x": 10.00223,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.004796,
+          "peak": 0.03978588
+        },
+        {
+          "iteration": 5,
+          "centroid_y": 9.12336,
+          "centroid_x": 9.99314,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.091602,
+          "peak": 0.04200318
+        },
+        {
+          "iteration": 6,
+          "centroid_y": 10.29357,
+          "centroid_x": 10.01922,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.942098,
+          "peak": 0.04833368
+        },
+        {
+          "iteration": 7,
+          "centroid_y": 10.08341,
+          "centroid_x": 9.94823,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.68163,
+          "peak": 0.05604666
+        },
+        {
+          "iteration": 8,
+          "centroid_y": 9.74456,
+          "centroid_x": 10.0534,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.605412,
+          "peak": 0.06250202
+        },
+        {
+          "iteration": 9,
+          "centroid_y": 10.31734,
+          "centroid_x": 10.01155,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.658068,
+          "peak": 0.06761897
+        },
+        {
+          "iteration": 10,
+          "centroid_y": 9.57084,
+          "centroid_x": 9.8697,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.705945,
+          "peak": 0.07140923
+        },
+        {
+          "iteration": 11,
+          "centroid_y": 10.41003,
+          "centroid_x": 10.14198,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.707729,
+          "peak": 0.07482696
+        },
+        {
+          "iteration": 12,
+          "centroid_y": 9.67828,
+          "centroid_x": 9.96684,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.649136,
+          "peak": 0.07864258
+        },
+        {
+          "iteration": 13,
+          "centroid_y": 10.10269,
+          "centroid_x": 9.90246,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.628921,
+          "peak": 0.08246816
+        },
+        {
+          "iteration": 14,
+          "centroid_y": 10.07756,
+          "centroid_x": 10.1515,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.53969,
+          "peak": 0.08645065
+        },
+        {
+          "iteration": 15,
+          "centroid_y": 9.73333,
+          "centroid_x": 9.80708,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.567642,
+          "peak": 0.08888679
+        },
+        {
+          "iteration": 16,
+          "centroid_y": 10.43943,
+          "centroid_x": 10.11322,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.650355,
+          "peak": 0.08997987
+        },
+        {
+          "iteration": 17,
+          "centroid_y": 9.49487,
+          "centroid_x": 10.17826,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.686284,
+          "peak": 0.09099413
+        },
+        {
+          "iteration": 18,
+          "centroid_y": 10.23828,
+          "centroid_x": 9.63787,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.655886,
+          "peak": 0.09311647
+        },
+        {
+          "iteration": 19,
+          "centroid_y": 10.08475,
+          "centroid_x": 10.18797,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.557834,
+          "peak": 0.09582863
+        },
+        {
+          "iteration": 20,
+          "centroid_y": 9.73245,
+          "centroid_x": 9.91867,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.555802,
+          "peak": 0.09763587
+        },
+        {
+          "iteration": 21,
+          "centroid_y": 10.24011,
+          "centroid_x": 10.03012,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.602443,
+          "peak": 0.0995474
+        },
+        {
+          "iteration": 22,
+          "centroid_y": 9.88568,
+          "centroid_x": 10.11128,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.594311,
+          "peak": 0.10170427
+        },
+        {
+          "iteration": 23,
+          "centroid_y": 9.91286,
+          "centroid_x": 9.86691,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.512927,
+          "peak": 0.10410739
+        },
+        {
+          "iteration": 24,
+          "centroid_y": 10.173,
+          "centroid_x": 10.04223,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.515856,
+          "peak": 0.10561635
+        }
+      ],
+      "runtime_seconds": 1.6601,
+      "figure": "figures/text_polyline.png"
+    },
+    {
+      "sample": {
+        "key": "texture_straight",
+        "label": "Texture block / straight",
+        "category": "texture_blocks",
+        "notes": "Multi-scale texture supplies motion information in both axes.",
+        "truth_trajectory_xy": [
+          [
+            -5.5,
+            0.0
+          ],
+          [
+            5.5,
+            0.0
+          ]
+        ],
+        "truth_kernel_size": 13,
+        "observation_noise_sigma": 0.008
+      },
+      "solver_input": {
+        "shape": [
+          192,
+          192
+        ],
+        "max_kernel_size": 21,
+        "initial_kernel_source": "centered_isometric_gaussian",
+        "truth_used_by_solver": false
+      },
+      "kernel_metrics": {
+        "centroid_error_px": 0.102576,
+        "peak_error_px": 1.0,
+        "ncc": 0.672255,
+        "truth_centroid_yx": [
+          10.0,
+          10.0
+        ],
+        "estimate_centroid_yx": [
+          9.901786,
+          9.970404
+        ],
+        "truth_peak_yx": [
+          10,
+          9
+        ],
+        "estimate_peak_yx": [
+          10,
+          10
+        ]
+      },
+      "reconstruction": {
+        "psnr_db": 11.409852,
+        "relative_error_pct": 43.355378,
+        "rmse": 0.26884837,
+        "ringing_index_pct": 26.652175,
+        "edge_overshoot_pct": 52.687177
+      },
+      "blurred_baseline": {
+        "psnr_db": 12.121796,
+        "relative_error_pct": 39.943467,
+        "rmse": 0.24769097,
+        "ringing_index_pct": 26.64613,
+        "edge_overshoot_pct": 47.158186
+      },
+      "uncertainty": {
+        "label": "low",
+        "score": 0.204022,
+        "observability": 0.775273,
+        "centroid_std_px": 0.582238,
+        "ensemble_centroid_std_px": 0.135248,
+        "unidentifiability_floor_px": 0.566311,
+        "centroid_95pct_span_yx": [
+          1.378901,
+          1.351371
+        ],
+        "relative_kernel_std": 0.211096,
+        "ensemble_size": 5,
+        "diagnostics": {
+          "gradient_mean": 0.04164011,
+          "local_structure_coherence": 0.62021863,
+          "normalized_gradient": 1.0,
+          "normalized_coherence": 0.77527329,
+          "ensemble_ambiguity": 0.15078273,
+          "centroid_std_px": 0.5822375,
+          "ensemble_centroid_std_px": 0.135248,
+          "uncertainty_floor_px": 0.5663113,
+          "relative_kernel_std": 0.21109582,
+          "centroid_95pct_span_y": 0.24627826,
+          "centroid_95pct_span_x": 0.21874836,
+          "ensemble_size": 5.0
+        }
+      },
+      "objective": {
+        "iteration": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "objective": [
+          0.0020872431,
+          0.0011757232,
+          0.0010294254,
+          0.001064829,
+          0.001054891,
+          0.0010857388,
+          0.00105911,
+          0.0010900791,
+          0.0010599835,
+          0.0011046847,
+          0.0010978152,
+          0.0011371943,
+          0.0010796325,
+          0.0011394411,
+          0.0010776201,
+          0.0011516083,
+          0.0011053529,
+          0.0011439906,
+          0.0010915502,
+          0.0011224414,
+          0.0011022764,
+          0.0011057055,
+          0.0010930131,
+          0.001097246
+        ],
+        "data_term": [
+          0.0014666408,
+          0.0003225039,
+          0.0001611434,
+          0.0001862469,
+          0.0001606707,
+          0.0002039219,
+          0.0001779051,
+          0.0001939442,
+          0.0001445901,
+          0.0001783725,
+          0.0001432387,
+          0.0002109397,
+          0.0001337774,
+          0.0002079671,
+          0.000133368,
+          0.0002181365,
+          0.0001247595,
+          0.0001975397,
+          0.0001244685,
+          0.0001644167,
+          0.0001317965,
+          0.0001526514,
+          0.000145852,
+          0.0001298645
+        ],
+        "regularizer": [
+          0.0006206023,
+          0.0008532193,
+          0.0008682819,
+          0.0008785821,
+          0.0008942203,
+          0.0008818168,
+          0.0008812049,
+          0.0008961349,
+          0.0009153934,
+          0.0009263122,
+          0.0009545765,
+          0.0009262546,
+          0.0009458551,
+          0.0009314739,
+          0.0009442521,
+          0.0009334718,
+          0.0009805934,
+          0.0009464509,
+          0.0009670817,
+          0.0009580248,
+          0.0009704798,
+          0.0009530541,
+          0.0009471611,
+          0.0009673816
+        ]
+      },
+      "kernel_evolution_stats": [
+        {
+          "iteration": 0,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 285,
+          "entropy": 4.661303,
+          "peak": 0.02549641
+        },
+        {
+          "iteration": 1,
+          "centroid_y": 10.01518,
+          "centroid_x": 9.99907,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.734936,
+          "peak": 0.03065364
+        },
+        {
+          "iteration": 2,
+          "centroid_y": 9.99875,
+          "centroid_x": 9.9943,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.476959,
+          "peak": 0.04852824
+        },
+        {
+          "iteration": 3,
+          "centroid_y": 9.99212,
+          "centroid_x": 9.98795,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.412365,
+          "peak": 0.06280765
+        },
+        {
+          "iteration": 4,
+          "centroid_y": 10.00015,
+          "centroid_x": 10.00036,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.463976,
+          "peak": 0.07383006
+        },
+        {
+          "iteration": 5,
+          "centroid_y": 9.98836,
+          "centroid_x": 9.99292,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.44747,
+          "peak": 0.08327328
+        },
+        {
+          "iteration": 6,
+          "centroid_y": 10.03012,
+          "centroid_x": 9.999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.621785,
+          "peak": 0.09014615
+        },
+        {
+          "iteration": 7,
+          "centroid_y": 9.96009,
+          "centroid_x": 10.01387,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.627163,
+          "peak": 0.09724376
+        },
+        {
+          "iteration": 8,
+          "centroid_y": 10.05677,
+          "centroid_x": 10.00197,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.682457,
+          "peak": 0.10430674
+        },
+        {
+          "iteration": 9,
+          "centroid_y": 9.97195,
+          "centroid_x": 10.04313,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.542422,
+          "peak": 0.11200388
+        },
+        {
+          "iteration": 10,
+          "centroid_y": 10.10042,
+          "centroid_x": 9.95825,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.604509,
+          "peak": 0.1183635
+        },
+        {
+          "iteration": 11,
+          "centroid_y": 9.93395,
+          "centroid_x": 10.03339,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.48203,
+          "peak": 0.12400253
+        },
+        {
+          "iteration": 12,
+          "centroid_y": 10.15498,
+          "centroid_x": 9.95669,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.663818,
+          "peak": 0.1283224
+        },
+        {
+          "iteration": 13,
+          "centroid_y": 9.93713,
+          "centroid_x": 10.05409,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.480052,
+          "peak": 0.1332682
+        },
+        {
+          "iteration": 14,
+          "centroid_y": 10.08281,
+          "centroid_x": 9.94217,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.677631,
+          "peak": 0.13695681
+        },
+        {
+          "iteration": 15,
+          "centroid_y": 10.00901,
+          "centroid_x": 10.07058,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.49937,
+          "peak": 0.14168172
+        },
+        {
+          "iteration": 16,
+          "centroid_y": 9.90118,
+          "centroid_x": 9.94014,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.670561,
+          "peak": 0.14539916
+        },
+        {
+          "iteration": 17,
+          "centroid_y": 9.98858,
+          "centroid_x": 10.02534,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.380281,
+          "peak": 0.15020247
+        },
+        {
+          "iteration": 18,
+          "centroid_y": 10.03823,
+          "centroid_x": 9.9579,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.630999,
+          "peak": 0.15334788
+        },
+        {
+          "iteration": 19,
+          "centroid_y": 10.03318,
+          "centroid_x": 10.04494,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.492084,
+          "peak": 0.15721968
+        },
+        {
+          "iteration": 20,
+          "centroid_y": 9.86424,
+          "centroid_x": 9.96934,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.587612,
+          "peak": 0.15996015
+        },
+        {
+          "iteration": 21,
+          "centroid_y": 10.11804,
+          "centroid_x": 9.97728,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.517385,
+          "peak": 0.16288361
+        },
+        {
+          "iteration": 22,
+          "centroid_y": 9.85157,
+          "centroid_x": 10.00562,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.579992,
+          "peak": 0.16533667
+        },
+        {
+          "iteration": 23,
+          "centroid_y": 10.12358,
+          "centroid_x": 10.01517,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.569583,
+          "peak": 0.16784423
+        },
+        {
+          "iteration": 24,
+          "centroid_y": 9.89572,
+          "centroid_x": 9.95493,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.521614,
+          "peak": 0.16979187
+        }
+      ],
+      "runtime_seconds": 1.7872,
+      "figure": "figures/texture_straight.png"
+    },
+    {
+      "sample": {
+        "key": "texture_polyline",
+        "label": "Texture block / polyline",
+        "category": "texture_blocks",
+        "notes": "Dense structure helps resolve a short kinked path.",
+        "truth_trajectory_xy": [
+          [
+            -6.0,
+            -2.5
+          ],
+          [
+            -2.0,
+            2.5
+          ],
+          [
+            2.5,
+            1.0
+          ],
+          [
+            6.0,
+            -2.0
+          ]
+        ],
+        "truth_kernel_size": 15,
+        "observation_noise_sigma": 0.008
+      },
+      "solver_input": {
+        "shape": [
+          192,
+          192
+        ],
+        "max_kernel_size": 21,
+        "initial_kernel_source": "centered_isometric_gaussian",
+        "truth_used_by_solver": false
+      },
+      "kernel_metrics": {
+        "centroid_error_px": 0.566527,
+        "peak_error_px": 2.828427,
+        "ncc": 0.098178,
+        "truth_centroid_yx": [
+          10.380292,
+          9.686766
+        ],
+        "estimate_centroid_yx": [
+          10.037224,
+          10.137606
+        ],
+        "truth_peak_yx": [
+          12,
+          8
+        ],
+        "estimate_peak_yx": [
+          10,
+          10
+        ]
+      },
+      "reconstruction": {
+        "psnr_db": 10.843317,
+        "relative_error_pct": 46.277484,
+        "rmse": 0.28696846,
+        "ringing_index_pct": 29.005233,
+        "edge_overshoot_pct": 56.082646
+      },
+      "blurred_baseline": {
+        "psnr_db": 11.402891,
+        "relative_error_pct": 43.390135,
+        "rmse": 0.2690639,
+        "ringing_index_pct": 28.535793,
+        "edge_overshoot_pct": 52.820502
+      },
+      "uncertainty": {
+        "label": "medium",
+        "score": 0.391413,
+        "observability": 0.519544,
+        "centroid_std_px": 1.222337,
+        "ensemble_centroid_std_px": 0.167917,
+        "unidentifiability_floor_px": 1.210748,
+        "centroid_95pct_span_yx": [
+          2.688397,
+          2.686986
+        ],
+        "relative_kernel_std": 0.227422,
+        "ensemble_size": 5,
+        "diagnostics": {
+          "gradient_mean": 0.03296241,
+          "local_structure_coherence": 0.55504999,
+          "normalized_gradient": 0.7488253,
+          "normalized_coherence": 0.69381249,
+          "ensemble_ambiguity": 0.16244454,
+          "centroid_std_px": 1.22233684,
+          "ensemble_centroid_std_px": 0.16791671,
+          "uncertainty_floor_px": 1.21074825,
+          "relative_kernel_std": 0.22742236,
+          "centroid_95pct_span_y": 0.2669002,
+          "centroid_95pct_span_x": 0.26548971,
+          "ensemble_size": 5.0
+        }
+      },
+      "objective": {
+        "iteration": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "objective": [
+          0.0015467482,
+          0.0013219476,
+          0.0011153442,
+          0.0009576953,
+          0.0009427507,
+          0.0009896587,
+          0.0010219206,
+          0.0009896132,
+          0.0010260428,
+          0.001009817,
+          0.0011080342,
+          0.0010185162,
+          0.001096403,
+          0.0010311442,
+          0.0011042523,
+          0.0010204653,
+          0.0011113861,
+          0.0010161911,
+          0.001084431,
+          0.0010119362,
+          0.0010684301,
+          0.0010090596,
+          0.0010264434,
+          0.0010312286
+        ],
+        "data_term": [
+          0.0008149157,
+          0.0003818871,
+          0.0003039529,
+          0.0001538129,
+          0.0001064841,
+          0.0001008022,
+          0.0001713357,
+          0.0001237533,
+          0.0001641243,
+          0.0001087768,
+          0.0002499493,
+          0.0001175981,
+          0.00023696,
+          0.000100803,
+          0.0002223031,
+          0.0001080175,
+          0.0002438379,
+          9.40723e-05,
+          0.0001958263,
+          0.0001047335,
+          0.0001859949,
+          9.30416e-05,
+          0.000135749,
+          0.000121886
+        ],
+        "regularizer": [
+          0.0007318326,
+          0.0009400605,
+          0.0008113912,
+          0.0008038824,
+          0.0008362666,
+          0.0008888565,
+          0.0008505849,
+          0.0008658598,
+          0.0008619185,
+          0.0009010402,
+          0.0008580849,
+          0.0009009182,
+          0.000859443,
+          0.0009303412,
+          0.0008819492,
+          0.0009124479,
+          0.0008675483,
+          0.0009221188,
+          0.0008886046,
+          0.0009072027,
+          0.0008824352,
+          0.000916018,
+          0.0008906944,
+          0.0009093427
+        ]
+      },
+      "kernel_evolution_stats": [
+        {
+          "iteration": 0,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 285,
+          "entropy": 4.661303,
+          "peak": 0.02549641
+        },
+        {
+          "iteration": 1,
+          "centroid_y": 9.83294,
+          "centroid_x": 10.01353,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.471412,
+          "peak": 0.0435586
+        },
+        {
+          "iteration": 2,
+          "centroid_y": 9.98282,
+          "centroid_x": 10.00808,
+          "mass": 1.0,
+          "support_pixels": 27,
+          "entropy": 3.047981,
+          "peak": 0.06599839
+        },
+        {
+          "iteration": 3,
+          "centroid_y": 10.05461,
+          "centroid_x": 10.03964,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 4.029287,
+          "peak": 0.07392846
+        },
+        {
+          "iteration": 4,
+          "centroid_y": 9.87344,
+          "centroid_x": 9.99742,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.978057,
+          "peak": 0.08917245
+        },
+        {
+          "iteration": 5,
+          "centroid_y": 10.08729,
+          "centroid_x": 10.06686,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.758247,
+          "peak": 0.10592069
+        },
+        {
+          "iteration": 6,
+          "centroid_y": 9.95901,
+          "centroid_x": 9.94978,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.611554,
+          "peak": 0.11873566
+        },
+        {
+          "iteration": 7,
+          "centroid_y": 9.97937,
+          "centroid_x": 10.1332,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.835145,
+          "peak": 0.12619535
+        },
+        {
+          "iteration": 8,
+          "centroid_y": 9.98099,
+          "centroid_x": 9.83163,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.766322,
+          "peak": 0.13356646
+        },
+        {
+          "iteration": 9,
+          "centroid_y": 10.05315,
+          "centroid_x": 10.24906,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.85857,
+          "peak": 0.14041351
+        },
+        {
+          "iteration": 10,
+          "centroid_y": 9.89941,
+          "centroid_x": 9.79071,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.639166,
+          "peak": 0.14751069
+        },
+        {
+          "iteration": 11,
+          "centroid_y": 10.21501,
+          "centroid_x": 10.29314,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.971967,
+          "peak": 0.15153203
+        },
+        {
+          "iteration": 12,
+          "centroid_y": 9.87593,
+          "centroid_x": 9.87048,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.648601,
+          "peak": 0.1586964
+        },
+        {
+          "iteration": 13,
+          "centroid_y": 10.21893,
+          "centroid_x": 10.18984,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.945161,
+          "peak": 0.16413402
+        },
+        {
+          "iteration": 14,
+          "centroid_y": 9.93137,
+          "centroid_x": 9.99395,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.556186,
+          "peak": 0.17241359
+        },
+        {
+          "iteration": 15,
+          "centroid_y": 10.17372,
+          "centroid_x": 10.0311,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.886137,
+          "peak": 0.1767089
+        },
+        {
+          "iteration": 16,
+          "centroid_y": 9.88216,
+          "centroid_x": 10.00372,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.592592,
+          "peak": 0.18331473
+        },
+        {
+          "iteration": 17,
+          "centroid_y": 10.28969,
+          "centroid_x": 9.99647,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.935911,
+          "peak": 0.18684922
+        },
+        {
+          "iteration": 18,
+          "centroid_y": 9.87185,
+          "centroid_x": 10.0269,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.567114,
+          "peak": 0.19360033
+        },
+        {
+          "iteration": 19,
+          "centroid_y": 10.20183,
+          "centroid_x": 9.97653,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.840156,
+          "peak": 0.19718615
+        },
+        {
+          "iteration": 20,
+          "centroid_y": 9.84373,
+          "centroid_x": 10.02257,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.645778,
+          "peak": 0.20230325
+        },
+        {
+          "iteration": 21,
+          "centroid_y": 10.1417,
+          "centroid_x": 9.9416,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.86994,
+          "peak": 0.20576206
+        },
+        {
+          "iteration": 22,
+          "centroid_y": 9.92174,
+          "centroid_x": 10.02868,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.674688,
+          "peak": 0.21140878
+        },
+        {
+          "iteration": 23,
+          "centroid_y": 10.01767,
+          "centroid_x": 9.85543,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.777015,
+          "peak": 0.21532871
+        },
+        {
+          "iteration": 24,
+          "centroid_y": 10.03346,
+          "centroid_x": 10.12914,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.761372,
+          "peak": 0.21908882
+        }
+      ],
+      "runtime_seconds": 1.639,
+      "figure": "figures/texture_polyline.png"
+    },
+    {
+      "sample": {
+        "key": "noise_straight",
+        "label": "Noise sample / straight",
+        "category": "noise",
+        "notes": "Stationary random content gives weak and non-unique motion cues.",
+        "truth_trajectory_xy": [
+          [
+            -5.5,
+            0.0
+          ],
+          [
+            5.5,
+            0.0
+          ]
+        ],
+        "truth_kernel_size": 13,
+        "observation_noise_sigma": 0.025
+      },
+      "solver_input": {
+        "shape": [
+          192,
+          192
+        ],
+        "max_kernel_size": 21,
+        "initial_kernel_source": "centered_isometric_gaussian",
+        "truth_used_by_solver": false
+      },
+      "kernel_metrics": {
+        "centroid_error_px": 3e-06,
+        "peak_error_px": 1.0,
+        "ncc": 0.291759,
+        "truth_centroid_yx": [
+          10.0,
+          10.0
+        ],
+        "estimate_centroid_yx": [
+          10.0,
+          10.000003
+        ],
+        "truth_peak_yx": [
+          10,
+          9
+        ],
+        "estimate_peak_yx": [
+          10,
+          10
+        ]
+      },
+      "reconstruction": {
+        "psnr_db": 11.039158,
+        "relative_error_pct": 49.086867,
+        "rmse": 0.28057056,
+        "ringing_index_pct": 120.611314,
+        "edge_overshoot_pct": 43.166224
+      },
+      "blurred_baseline": {
+        "psnr_db": 11.046116,
+        "relative_error_pct": 49.047563,
+        "rmse": 0.2803459,
+        "ringing_index_pct": 120.80271,
+        "edge_overshoot_pct": 43.499191
+      },
+      "uncertainty": {
+        "label": "medium",
+        "score": 0.32121,
+        "observability": 0.620061,
+        "centroid_std_px": 0.958893,
+        "ensemble_centroid_std_px": 0.052656,
+        "unidentifiability_floor_px": 0.957447,
+        "centroid_95pct_span_yx": [
+          1.944882,
+          2.032378
+        ],
+        "relative_kernel_std": 0.23827,
+        "ensemble_size": 5,
+        "diagnostics": {
+          "gradient_mean": 0.0402146,
+          "local_structure_coherence": 0.50852999,
+          "normalized_gradient": 0.97545618,
+          "normalized_coherence": 0.63566248,
+          "ensemble_ambiguity": 0.17019292,
+          "centroid_std_px": 0.9588934,
+          "ensemble_centroid_std_px": 0.0526562,
+          "uncertainty_floor_px": 0.95744654,
+          "relative_kernel_std": 0.23827008,
+          "centroid_95pct_span_y": 0.02998869,
+          "centroid_95pct_span_x": 0.11748475,
+          "ensemble_size": 5.0
+        }
+      },
+      "objective": {
+        "iteration": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "objective": [
+          0.0014215445,
+          0.0016745887,
+          0.0012910214,
+          0.0012631284,
+          0.0012572231,
+          0.001278392,
+          0.0012545927,
+          0.0013014135,
+          0.0013212607,
+          0.0012673168,
+          0.0013197918,
+          0.0013159242,
+          0.0013357679,
+          0.0013277986,
+          0.0014548643,
+          0.0014240143,
+          0.0014919624,
+          0.0014596141,
+          0.0015206721,
+          0.0015378383,
+          0.001534495,
+          0.0015174012,
+          0.0015115354,
+          0.0014985102
+        ],
+        "data_term": [
+          0.0008289777,
+          0.0005838193,
+          0.0003783653,
+          0.0003283295,
+          0.0002615475,
+          0.0002584193,
+          0.0002340742,
+          0.0002330846,
+          0.0001650186,
+          0.0001849154,
+          0.0001568791,
+          0.000129923,
+          0.0001198841,
+          0.0001406291,
+          7.36213e-05,
+          0.0001047354,
+          7.55504e-05,
+          7.51506e-05,
+          5.60292e-05,
+          6.46499e-05,
+          6.55024e-05,
+          4.53526e-05,
+          5.57672e-05,
+          7.22635e-05
+        ],
+        "regularizer": [
+          0.0005925668,
+          0.0010907694,
+          0.0009126561,
+          0.0009347989,
+          0.0009956756,
+          0.0010199727,
+          0.0010205185,
+          0.0010683289,
+          0.0011562422,
+          0.0010824014,
+          0.0011629128,
+          0.0011860012,
+          0.0012158838,
+          0.0011871695,
+          0.0013812429,
+          0.0013192789,
+          0.001416412,
+          0.0013844635,
+          0.0014646429,
+          0.0014731885,
+          0.0014689925,
+          0.0014720485,
+          0.0014557681,
+          0.0014262467
+        ]
+      },
+      "kernel_evolution_stats": [
+        {
+          "iteration": 0,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 285,
+          "entropy": 4.661303,
+          "peak": 0.02549641
+        },
+        {
+          "iteration": 1,
+          "centroid_y": 9.98503,
+          "centroid_x": 9.99519,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 5.0177,
+          "peak": 0.05772179
+        },
+        {
+          "iteration": 2,
+          "centroid_y": 9.99881,
+          "centroid_x": 9.99827,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.034555,
+          "peak": 0.10286104
+        },
+        {
+          "iteration": 3,
+          "centroid_y": 9.99748,
+          "centroid_x": 9.99989,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.833127,
+          "peak": 0.14249082
+        },
+        {
+          "iteration": 4,
+          "centroid_y": 10.00006,
+          "centroid_x": 10.00072,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.857296,
+          "peak": 0.18239441
+        },
+        {
+          "iteration": 5,
+          "centroid_y": 9.99435,
+          "centroid_x": 9.99428,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.661589,
+          "peak": 0.2232642
+        },
+        {
+          "iteration": 6,
+          "centroid_y": 10.00004,
+          "centroid_x": 10.00053,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.649188,
+          "peak": 0.26087231
+        },
+        {
+          "iteration": 7,
+          "centroid_y": 10.00442,
+          "centroid_x": 10.03217,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.643367,
+          "peak": 0.29682455
+        },
+        {
+          "iteration": 8,
+          "centroid_y": 9.99994,
+          "centroid_x": 9.9948,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.638866,
+          "peak": 0.33198973
+        },
+        {
+          "iteration": 9,
+          "centroid_y": 9.99951,
+          "centroid_x": 9.99627,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.385327,
+          "peak": 0.36832483
+        },
+        {
+          "iteration": 10,
+          "centroid_y": 9.99978,
+          "centroid_x": 9.9999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.524565,
+          "peak": 0.40148435
+        },
+        {
+          "iteration": 11,
+          "centroid_y": 9.99954,
+          "centroid_x": 9.99849,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.401485,
+          "peak": 0.43400357
+        },
+        {
+          "iteration": 12,
+          "centroid_y": 9.99005,
+          "centroid_x": 9.9913,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.313593,
+          "peak": 0.46679179
+        },
+        {
+          "iteration": 13,
+          "centroid_y": 10.00011,
+          "centroid_x": 10.00001,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.191293,
+          "peak": 0.49878975
+        },
+        {
+          "iteration": 14,
+          "centroid_y": 9.99994,
+          "centroid_x": 9.99962,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 3.292087,
+          "peak": 0.52900836
+        },
+        {
+          "iteration": 15,
+          "centroid_y": 9.99975,
+          "centroid_x": 9.99863,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.703861,
+          "peak": 0.55915616
+        },
+        {
+          "iteration": 16,
+          "centroid_y": 10.0,
+          "centroid_x": 10.00006,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.923152,
+          "peak": 0.5835776
+        },
+        {
+          "iteration": 17,
+          "centroid_y": 10.00001,
+          "centroid_x": 10.00029,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.692273,
+          "peak": 0.60538019
+        },
+        {
+          "iteration": 18,
+          "centroid_y": 9.99997,
+          "centroid_x": 10.00013,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.72084,
+          "peak": 0.6245412
+        },
+        {
+          "iteration": 19,
+          "centroid_y": 10.00003,
+          "centroid_x": 10.00017,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.457855,
+          "peak": 0.64007922
+        },
+        {
+          "iteration": 20,
+          "centroid_y": 10.00002,
+          "centroid_x": 10.00004,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.471583,
+          "peak": 0.65052391
+        },
+        {
+          "iteration": 21,
+          "centroid_y": 9.99999,
+          "centroid_x": 10.00002,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.48566,
+          "peak": 0.65848469
+        },
+        {
+          "iteration": 22,
+          "centroid_y": 10.0,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.407231,
+          "peak": 0.6651543
+        },
+        {
+          "iteration": 23,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.433456,
+          "peak": 0.66842969
+        },
+        {
+          "iteration": 24,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 2.539792,
+          "peak": 0.67002948
+        }
+      ],
+      "runtime_seconds": 2.0544,
+      "figure": "figures/noise_straight.png"
+    },
+    {
+      "sample": {
+        "key": "low_texture_polyline",
+        "label": "Low texture / polyline",
+        "category": "low_texture",
+        "notes": "Nearly flat input: the kernel is under-constrained; high uncertainty is expected.",
+        "truth_trajectory_xy": [
+          [
+            -6.0,
+            -2.5
+          ],
+          [
+            -2.0,
+            2.5
+          ],
+          [
+            2.5,
+            1.0
+          ],
+          [
+            6.0,
+            -2.0
+          ]
+        ],
+        "truth_kernel_size": 15,
+        "observation_noise_sigma": 0.003
+      },
+      "solver_input": {
+        "shape": [
+          192,
+          192
+        ],
+        "max_kernel_size": 21,
+        "initial_kernel_source": "centered_isometric_gaussian",
+        "truth_used_by_solver": false
+      },
+      "kernel_metrics": {
+        "centroid_error_px": 0.492704,
+        "peak_error_px": 2.828427,
+        "ncc": 0.209153,
+        "truth_centroid_yx": [
+          10.380292,
+          9.686766
+        ],
+        "estimate_centroid_yx": [
+          9.999968,
+          9.999993
+        ],
+        "truth_peak_yx": [
+          12,
+          8
+        ],
+        "estimate_peak_yx": [
+          10,
+          10
+        ]
+      },
+      "reconstruction": {
+        "psnr_db": 49.668665,
+        "relative_error_pct": 0.649532,
+        "rmse": 0.00328524,
+        "ringing_index_pct": 0.0,
+        "edge_overshoot_pct": 0.0
+      },
+      "blurred_baseline": {
+        "psnr_db": 49.668665,
+        "relative_error_pct": 0.649532,
+        "rmse": 0.00328524,
+        "ringing_index_pct": 0.0,
+        "edge_overshoot_pct": 0.0
+      },
+      "uncertainty": {
+        "label": "high",
+        "score": 0.725085,
+        "observability": 0.0,
+        "centroid_std_px": 2.520004,
+        "ensemble_centroid_std_px": 0.004202,
+        "unidentifiability_floor_px": 2.52,
+        "centroid_95pct_span_yx": [
+          5.04834,
+          5.041105
+        ],
+        "relative_kernel_std": 0.025424,
+        "ensemble_size": 5,
+        "diagnostics": {
+          "gradient_mean": 0.00272007,
+          "local_structure_coherence": 0.14039394,
+          "normalized_gradient": 0.0,
+          "normalized_coherence": 0.17549242,
+          "ensemble_ambiguity": 0.01816001,
+          "centroid_std_px": 2.5200035,
+          "ensemble_centroid_std_px": 0.00420225,
+          "uncertainty_floor_px": 2.52,
+          "relative_kernel_std": 0.02542401,
+          "centroid_95pct_span_y": 0.00834029,
+          "centroid_95pct_span_x": 0.00110527,
+          "ensemble_size": 5.0
+        }
+      },
+      "objective": {
+        "iteration": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ],
+        "objective": [
+          0.0001697951,
+          0.0001172652,
+          6.15863e-05,
+          5.23727e-05,
+          5.09657e-05,
+          3.89712e-05,
+          3.39823e-05,
+          3.35669e-05,
+          2.94018e-05,
+          2.73745e-05,
+          2.58605e-05,
+          2.50416e-05,
+          2.43689e-05,
+          2.32474e-05,
+          2.28458e-05,
+          2.23088e-05,
+          2.23523e-05,
+          2.21536e-05,
+          2.22133e-05,
+          2.23129e-05,
+          2.24924e-05,
+          2.27507e-05,
+          2.30321e-05,
+          2.33733e-05
+        ],
+        "data_term": [
+          4.8831e-06,
+          4.485e-06,
+          4.5112e-06,
+          4.8095e-06,
+          4.6291e-06,
+          4.5158e-06,
+          4.5108e-06,
+          4.5082e-06,
+          4.5061e-06,
+          4.5013e-06,
+          4.501e-06,
+          4.4968e-06,
+          4.4962e-06,
+          4.4927e-06,
+          4.4914e-06,
+          4.4884e-06,
+          4.4866e-06,
+          4.484e-06,
+          4.4817e-06,
+          4.4793e-06,
+          4.4768e-06,
+          4.4744e-06,
+          4.4718e-06,
+          4.4693e-06
+        ],
+        "regularizer": [
+          0.000164912,
+          0.0001127802,
+          5.70751e-05,
+          4.75632e-05,
+          4.63366e-05,
+          3.44555e-05,
+          2.94715e-05,
+          2.90587e-05,
+          2.48956e-05,
+          2.28733e-05,
+          2.13595e-05,
+          2.05449e-05,
+          1.98728e-05,
+          1.87547e-05,
+          1.83544e-05,
+          1.78204e-05,
+          1.78657e-05,
+          1.76696e-05,
+          1.77316e-05,
+          1.78336e-05,
+          1.80156e-05,
+          1.82763e-05,
+          1.85603e-05,
+          1.8904e-05
+        ]
+      },
+      "kernel_evolution_stats": [
+        {
+          "iteration": 0,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 285,
+          "entropy": 4.661303,
+          "peak": 0.02549641
+        },
+        {
+          "iteration": 1,
+          "centroid_y": 10.0,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 5.857869,
+          "peak": 0.00809727
+        },
+        {
+          "iteration": 2,
+          "centroid_y": 10.00001,
+          "centroid_x": 10.00001,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 5.952926,
+          "peak": 0.00603799
+        },
+        {
+          "iteration": 3,
+          "centroid_y": 10.00003,
+          "centroid_x": 10.00004,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.046723,
+          "peak": 0.00344449
+        },
+        {
+          "iteration": 4,
+          "centroid_y": 10.00003,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.055149,
+          "peak": 0.00314139
+        },
+        {
+          "iteration": 5,
+          "centroid_y": 10.00001,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.072138,
+          "peak": 0.00313333
+        },
+        {
+          "iteration": 6,
+          "centroid_y": 9.99996,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.074335,
+          "peak": 0.00276724
+        },
+        {
+          "iteration": 7,
+          "centroid_y": 9.99997,
+          "centroid_x": 10.0,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.075486,
+          "peak": 0.00287681
+        },
+        {
+          "iteration": 8,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.076638,
+          "peak": 0.00265398
+        },
+        {
+          "iteration": 9,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.07675,
+          "peak": 0.00275104
+        },
+        {
+          "iteration": 10,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077604,
+          "peak": 0.00257131
+        },
+        {
+          "iteration": 11,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077518,
+          "peak": 0.00262352
+        },
+        {
+          "iteration": 12,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077794,
+          "peak": 0.00258844
+        },
+        {
+          "iteration": 13,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077762,
+          "peak": 0.00257413
+        },
+        {
+          "iteration": 14,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077811,
+          "peak": 0.00261141
+        },
+        {
+          "iteration": 15,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077752,
+          "peak": 0.00256944
+        },
+        {
+          "iteration": 16,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077696,
+          "peak": 0.00261107
+        },
+        {
+          "iteration": 17,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077579,
+          "peak": 0.00258064
+        },
+        {
+          "iteration": 18,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077441,
+          "peak": 0.00260659
+        },
+        {
+          "iteration": 19,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077272,
+          "peak": 0.00259548
+        },
+        {
+          "iteration": 20,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.077058,
+          "peak": 0.00260556
+        },
+        {
+          "iteration": 21,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.076821,
+          "peak": 0.00260944
+        },
+        {
+          "iteration": 22,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.076532,
+          "peak": 0.00261111
+        },
+        {
+          "iteration": 23,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.07621,
+          "peak": 0.00262164
+        },
+        {
+          "iteration": 24,
+          "centroid_y": 9.99997,
+          "centroid_x": 9.99999,
+          "mass": 1.0,
+          "support_pixels": 441,
+          "entropy": 6.075833,
+          "peak": 0.00262357
+        }
+      ],
+      "runtime_seconds": 2.0179,
+      "figure": "figures/low_texture_polyline.png"
+    }
+  ]
+}
