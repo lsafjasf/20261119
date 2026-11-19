@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07100f">
+  <title>Moiré Lab · 屏摄摩尔纹频域修复实验</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="./index.html" aria-label="Moiré Lab 首页">
+      <span class="brand-mark" aria-hidden="true">
+        <i></i><i></i><i></i>
+      </span>
+      <span class="brand-copy">
+        <strong>MOIRÉ LAB</strong>
+        <small>SPECTRAL IMAGING</small>
+      </span>
+    </a>
+    <nav class="topnav" aria-label="实验模块">
+      <span class="nav-item active">频域实验台</span>
+      <span class="nav-item">窄带分析</span>
+      <span class="nav-item">批次校准</span>
+    </nav>
+    <div class="top-actions">
+      <span class="local-chip"><i></i> 本地运算</span>
+      <button class="btn btn-ghost" id="saveMaskButton" type="button">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3h9l3 3v11H4zM7 3v5h6V3M7 17v-5h6v5"/></svg>
+        保存掩码
+      </button>
+      <button class="btn btn-primary" id="exportButton" type="button">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0 4-4m-4 4L6 9M4 16h12"/></svg>
+        导出重建
+      </button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <section class="page-head">
+      <div>
+        <p class="eyebrow"><span>EXPERIMENT 04</span> / DISPLAY MOIRÉ</p>
+        <h1>屏摄摩尔纹 <em>频域修复</em> 实验</h1>
+        <p class="lede">定位成对窄带峰，构建可编辑陷波掩码，再由逆变换重建。只处理干扰频率，不模糊整张图像。</p>
+      </div>
+      <div class="run-readout">
+        <div class="readout-item">
+          <span>测试帧</span>
+          <strong id="frameReadout">TEXTILE · 512²</strong>
+        </div>
+        <div class="readout-item">
+          <span>掩码状态</span>
+          <strong class="accent" id="maskReadout">4 PAIRS</strong>
+        </div>
+        <div class="readout-item">
+          <span>重建方式</span>
+          <strong>IFFT / REAL</strong>
+        </div>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <div class="visual-column">
+        <section class="panel compare-panel">
+          <div class="panel-head">
+            <div>
+              <span class="section-kicker">01 / RECONSTRUCTION</span>
+              <h2>空间域对比</h2>
+            </div>
+            <div class="view-switch" role="group" aria-label="对比视图">
+              <button class="view-btn active" data-view="split" type="button">分屏</button>
+              <button class="view-btn" data-view="before" type="button">干扰原图</button>
+              <button class="view-btn" data-view="after" type="button">重建结果</button>
+            </div>
+          </div>
+          <div class="compare-stage" id="compareStage">
+            <canvas id="compareCanvas" aria-label="摩尔纹修复前后对比"></canvas>
+            <div class="image-tag tag-before"><i></i> 原始 / 周期干扰</div>
+            <div class="image-tag tag-after">陷波重建 <i></i></div>
+            <div class="split-handle" id="splitHandle" aria-hidden="true">
+              <span></span>
+            </div>
+            <div class="stage-meta">
+              <span>RGB · 8 BIT</span>
+              <span id="zoomReadout">1:1 DISPLAY</span>
+            </div>
+          </div>
+          <div class="compare-foot">
+            <div class="legend-item">
+              <span class="legend-line before"></span>
+              含已知周期干扰
+            </div>
+            <div class="legend-item">
+              <span class="legend-line after"></span>
+              定向陷波 + 逆变换
+            </div>
+            <p>拖动中线检查纹理与边缘。</p>
+          </div>
+        </section>
+
+        <section class="metrics-grid" aria-label="修复质量指标">
+          <article class="metric-card primary-metric">
+            <div class="metric-top">
+              <span class="metric-label">干扰能量降低</span>
+              <span class="metric-icon energy" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M13 2 5 14h6l-1 8 8-12h-6z"/></svg>
+              </span>
+            </div>
+            <div class="metric-value" id="energyMetric">—</div>
+            <div class="metric-bar"><span id="energyBar"></span></div>
+            <p>所选共轭峰带内的功率下降</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top">
+              <span class="metric-label">边缘锐度变化</span>
+              <span class="metric-icon edge" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 19 9 8l4 7 3-5 4 9z"/></svg>
+              </span>
+            </div>
+            <div class="metric-value" id="edgeMetric">—</div>
+            <div class="metric-scale"><span></span><i id="edgeMarker"></i><span></span></div>
+            <p>重建后相对干净基准的梯度保持</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top">
+              <span class="metric-label">空间振铃</span>
+              <span class="metric-icon ringing" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 12c2.2-6 4.4-6 6.6 0s4.4 6 6.6 0 4.4-6 6.6 0"/></svg>
+              </span>
+            </div>
+            <div class="metric-value" id="ringingMetric">—</div>
+            <div class="metric-scale ringing"><span></span><i id="ringingMarker"></i><span></span></div>
+            <p>相对无干扰基准的高频残差</p>
+          </article>
+        </section>
+
+        <section class="panel control-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="section-kicker">02 / NOTCH PROFILE</span>
+              <h2>窄带陷波参数</h2>
+            </div>
+            <span class="method-chip">NO GLOBAL BLUR</span>
+          </div>
+          <div class="control-grid">
+            <div class="control-block">
+              <label for="radiusRange">
+                <span>峰带半径</span>
+                <output id="radiusValue">3.0 px</output>
+              </label>
+              <input id="radiusRange" type="range" min="2.5" max="14" step="0.5" value="3">
+              <div class="range-hint"><span>精准</span><span>宽陷波</span></div>
+            </div>
+            <div class="control-block">
+              <label for="softnessRange">
+                <span>软边过渡</span>
+                <output id="softnessValue">65%</output>
+              </label>
+              <input id="softnessRange" type="range" min="0" max="100" step="1" value="65">
+              <div class="range-hint"><span>陡峭</span><span>平滑</span></div>
+            </div>
+            <div class="control-block">
+              <label for="strengthRange">
+                <span>陷波深度</span>
+                <output id="strengthValue">99%</output>
+              </label>
+              <input id="strengthRange" type="range" min="40" max="100" step="1" value="99">
+              <div class="range-hint"><span>保留</span><span>移除</span></div>
+            </div>
+            <div class="control-actions">
+              <button class="btn btn-secondary" id="resetMaskButton" type="button">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1-1 6M4 3v4h4"/></svg>
+                重置掩码
+              </button>
+              <button class="btn btn-secondary" id="regenerateButton" type="button">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v4m0-4-2.5 2.5M10 3l2.5 2.5M10 17v-4m0 4-2.5-2.5M10 17l2.5-2.5M3 10h4m-4 0 2.5-2.5M3 10l2.5 2.5M17 10h-4m4 0-2.5-2.5M17 10l-2.5 2.5"/></svg>
+                新测试样本
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel method-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="section-kicker">06 / METHOD</span>
+              <h2>为什么不是全图模糊</h2>
+            </div>
+            <span class="method-chip">DIRECTIONAL ONLY</span>
+          </div>
+          <div class="method-flow">
+            <div class="method-step">
+              <span class="method-index">01</span>
+              <div>
+                <strong>成对定位</strong>
+                <p>共轭峰 ±f 成对处理，保持实图像频谱对称。</p>
+              </div>
+            </div>
+            <div class="method-step">
+              <span class="method-index">02</span>
+              <div>
+                <strong>窄带衰减</strong>
+                <p>软边掩码只压低峰带，不改变其余频段。</p>
+              </div>
+            </div>
+            <div class="method-step">
+              <span class="method-index">03</span>
+              <div>
+                <strong>反变换重建</strong>
+                <p>R/G/B 三通道 IFFT 回到空间域，保留织纹。</p>
+              </div>
+            </div>
+          </div>
+          <p class="method-note">整图高斯模糊会同时抹除织物纤维与边缘；本实验的掩码只修改少量频谱区域，可逐峰审核并复用到同尺寸批次。</p>
+        </section>
+      </div>
+
+      <aside class="analysis-column">
+        <section class="panel spectrum-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="section-kicker">03 / SPECTRUM</span>
+              <h2>二维幅度谱</h2>
+            </div>
+            <div class="spectrum-tools">
+              <button class="icon-btn active" id="brushEraseButton" type="button" title="擦除掩码区域" aria-label="擦除掩码区域">
+                <svg viewBox="0 0 20 20"><path d="m4 13 7-7 5 5-7 7H4zM9 8l5 5"/></svg>
+              </button>
+              <button class="icon-btn" id="brushRestoreButton" type="button" title="恢复频谱区域" aria-label="恢复频谱区域">
+                <svg viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
+              </button>
+              <span class="tool-divider"></span>
+              <button class="icon-btn" id="spectrumBoostButton" type="button" title="切换频谱增益" aria-label="切换频谱增益">
+                <svg viewBox="0 0 20 20"><path d="M3 17 9 5l3 7 2-3 3 8z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="spectrum-wrap">
+            <canvas id="spectrumCanvas" aria-label="可编辑二维频谱与陷波掩码"></canvas>
+            <div class="spectrum-crosshair" aria-hidden="true"></div>
+            <span class="axis-label axis-x">u →</span>
+            <span class="axis-label axis-y">v →</span>
+            <span class="spectrum-hint" id="spectrumHint">拖动画笔，直接修整掩码</span>
+          </div>
+          <div class="spectrum-foot">
+            <div class="spectrum-legend">
+              <span><i class="dot-mask"></i>陷波区域</span>
+              <span><i class="dot-peak"></i>选中峰对</span>
+              <span><i class="dot-texture"></i>纹理峰</span>
+            </div>
+            <div class="brush-control">
+              <label for="brushRange">笔刷</label>
+              <input id="brushRange" type="range" min="4" max="26" step="1" value="10">
+              <output id="brushValue">10 px</output>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel peaks-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="section-kicker">04 / PEAK PAIRS</span>
+              <h2>共轭峰对</h2>
+            </div>
+            <span class="count-badge"><b id="selectedPeakCount">0</b> / <span id="totalPeakCount">0</span> 启用</span>
+          </div>
+          <p class="panel-note">勾选窄带干扰峰；取消真实重复纹理对应的峰，避免误伤织物周期。</p>
+          <div class="peak-list" id="peakList"></div>
+          <div class="peak-actions">
+            <button class="text-btn" id="selectInterferenceButton" type="button">仅选干扰峰</button>
+            <button class="text-btn" id="selectAllButton" type="button">全部启用</button>
+            <span class="auto-badge"><i></i> 自动配对 ±f</span>
+          </div>
+        </section>
+
+        <section class="panel batch-panel">
+          <div class="batch-copy">
+            <span class="section-kicker">05 / BATCH REUSE</span>
+            <h2>掩码复用到批次</h2>
+            <p>保存含频率掩码的 JSON，并应用到同尺寸图像。</p>
+          </div>
+          <div class="batch-actions">
+            <button class="btn btn-secondary" id="loadMaskButton" type="button">载入掩码</button>
+            <button class="btn btn-secondary" id="batchButton" type="button">批处理</button>
+            <input id="maskFileInput" type="file" accept=".json,application/json" hidden>
+            <input id="batchFileInput" type="file" accept="image/png,image/jpeg" multiple hidden>
+          </div>
+          <div class="batch-status" id="batchStatus">
+            <span class="status-dot"></span>
+            <span>等待载入同尺寸批次</span>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <p><span class="live-pulse"></span> 处理链：RGB → 亮度谱 → 成对窄带掩膜 → 复数 IFFT → RGB 重建</p>
+      <p class="footer-mono">FFT <b>512 × 512</b> · MASK <b>FLOAT</b> · v1.0</p>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="loading-veil" id="loadingVeil" aria-hidden="true">
+    <span class="loading-ring"></span>
+    <p>正在重建频谱…</p>
+  </div>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
