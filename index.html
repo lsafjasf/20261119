@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="交互式 JPEG 8×8 DCT 与系数量化实验台：颜色平面、正逆变换、量化系数编辑、基函数贡献与块边界误差。"
+    />
+    <title>DCT 系数量化实验台 · JPEG Signal Lab</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%2317352c'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='monospace' font-size='15' fill='%23f7f3e9'%3E8×8%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="DCT 系数量化实验台首页">
+        <span class="brand-mark" aria-hidden="true"><b>8</b><i>×</i><b>8</b></span>
+        <span class="brand-copy">
+          <span class="brand-kicker">JPEG Signal Lab / 0067</span>
+          <h1>DCT 系数量化实验台</h1>
+        </span>
+      </a>
+      <div class="topbar-meta" aria-label="实验参数">
+        <span class="status-pill"><i aria-hidden="true"></i>YCbCr · 4:4:4</span>
+        <span>8-bit 样本</span>
+        <span>浮点 DCT</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-labelledby="pattern-label">
+        <div class="pattern-group">
+          <span class="toolbar-label" id="pattern-label">测试图样</span>
+          <div class="segmented" id="patternButtons">
+            <button class="pattern-button is-active" data-pattern="flat" type="button">
+              <span class="pattern-swatch swatch-flat" aria-hidden="true"></span>
+              单色块
+            </button>
+            <button class="pattern-button" data-pattern="diagonal" type="button">
+              <span class="pattern-swatch swatch-diagonal" aria-hidden="true"></span>
+              斜线
+            </button>
+            <button class="pattern-button" data-pattern="checker" type="button">
+              <span class="pattern-swatch swatch-checker" aria-hidden="true"></span>
+              高频棋盘
+            </button>
+            <button class="pattern-button" data-pattern="color" type="button">
+              <span class="pattern-swatch swatch-color" aria-hidden="true"></span>
+              色度阶跃
+            </button>
+          </div>
+        </div>
+        <div class="toolbar-note">
+          <span class="mono">128 × 128 px</span>
+          <span class="toolbar-divider" aria-hidden="true"></span>
+          <span>16 × 16 个块</span>
+          <span class="toolbar-divider" aria-hidden="true"></span>
+          <span id="toolbarPlane">亮度平面 Y</span>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <aside class="panel source-panel" aria-labelledby="source-title">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">01 / 输入</span>
+              <h2 id="source-title">颜色平面</h2>
+            </div>
+            <span class="mini-badge">4:4:4</span>
+          </div>
+
+          <div class="plane-tabs" role="tablist" aria-label="选择颜色平面">
+            <button class="plane-tab is-active" data-plane="Y" role="tab" aria-selected="true" type="button">
+              <canvas class="plane-thumb" id="planeThumbY" width="48" height="48" aria-hidden="true"></canvas>
+              <span><strong>Y</strong><small>亮度</small></span>
+            </button>
+            <button class="plane-tab" data-plane="Cb" role="tab" aria-selected="false" type="button">
+              <canvas class="plane-thumb" id="planeThumbCb" width="48" height="48" aria-hidden="true"></canvas>
+              <span><strong>Cb</strong><small>蓝色差</small></span>
+            </button>
+            <button class="plane-tab" data-plane="Cr" role="tab" aria-selected="false" type="button">
+              <canvas class="plane-thumb" id="planeThumbCr" width="48" height="48" aria-hidden="true"></canvas>
+              <span><strong>Cr</strong><small>红色差</small></span>
+            </button>
+          </div>
+
+          <div class="source-frame">
+            <canvas id="sourceCanvas" width="288" height="288" aria-label="所选颜色平面与 8×8 分块"></canvas>
+            <span class="source-overlay-tag">块 <b id="sourceBlockLabel">08,08</b></span>
+          </div>
+
+          <div class="source-caption">
+            <span>点击任意块进行检查</span>
+            <span class="mono">8 × 8 分块</span>
+          </div>
+
+          <div class="block-nav" aria-label="选择相邻块">
+            <button type="button" data-move="up" title="上一行" aria-label="上一行">↑</button>
+            <button type="button" data-move="down" title="下一行" aria-label="下一行">↓</button>
+            <button type="button" data-move="left" title="左一块" aria-label="左一块">←</button>
+            <button type="button" data-move="right" title="右一块" aria-label="右一块">→</button>
+            <span class="block-nav-label">当前 <b id="blockNavLabel">(8, 8)</b></span>
+          </div>
+
+          <div class="source-readout" id="sourceReadout">
+            <span>平面均值 <b id="planeMean">–</b></span>
+            <span>平面范围 <b id="planeRange">–</b></span>
+          </div>
+
+          <p class="panel-note">
+            RGB 先转为整数 YCbCr，再独立按 8×8 分块。此实验不进行 4:2:0 色度抽样。
+          </p>
+        </aside>
+
+        <section class="center-column" aria-labelledby="pipeline-title">
+          <div class="selected-heading">
+            <div>
+              <span class="eyebrow">02 / 单块检查</span>
+              <h2 id="pipeline-title">8×8 块流水线</h2>
+            </div>
+            <div class="selection-tools">
+              <span class="selection-chip" id="selectionChip">Y · 块 (8,8)</span>
+              <button class="text-button" id="resetCoeffBtn" type="button">重置手改</button>
+            </div>
+          </div>
+
+          <div class="stage-grid">
+            <article class="stage-card">
+              <div class="stage-head">
+                <span class="stage-index">01</span>
+                <div><h3>原图块</h3><p>电平偏移 −128</p></div>
+                <span class="stage-badge">0–255</span>
+              </div>
+              <div class="matrix pixel-matrix" id="sourceMatrix" aria-label="原始 8×8 像素块"></div>
+              <div class="stage-foot"><span>像素值</span><span class="mono" id="sourceBlockMean">μ –</span></div>
+            </article>
+
+            <article class="stage-card">
+              <div class="stage-head">
+                <span class="stage-index">02</span>
+                <div><h3>DCT 频谱</h3><p>水平 u / 垂直 v</p></div>
+                <span class="stage-badge">浮点 F</span>
+              </div>
+              <div class="matrix dct-matrix" id="dctMatrix" aria-label="8×8 DCT 系数"></div>
+              <div class="stage-foot"><span>左上为 DC</span><span class="mono" id="dctPeak">peak –</span></div>
+            </article>
+
+            <article class="stage-card is-editable">
+              <div class="stage-head">
+                <span class="stage-index">03</span>
+                <div><h3>量化系数</h3><p>round(F ÷ Q)</p></div>
+                <span class="stage-badge editable-badge">可编辑</span>
+              </div>
+              <div class="matrix quant-matrix" id="quantMatrix" aria-label="可编辑的 8×8 量化系数"></div>
+              <div class="stage-foot"><span>输入整数后更新重建</span><span class="mono" id="nonzeroStage">0 / 64</span></div>
+            </article>
+
+            <article class="stage-card">
+              <div class="stage-head">
+                <span class="stage-index">04</span>
+                <div><h3>重建块</h3><p>IDCT + 128 + round</p></div>
+                <span class="stage-badge">0–255</span>
+              </div>
+              <div class="matrix pixel-matrix" id="reconMatrix" aria-label="反变换后的 8×8 像素块"></div>
+              <div class="stage-foot"><span>8-bit 舍入与截断</span><span class="mono" id="reconError">MAE –</span></div>
+            </article>
+          </div>
+
+          <section class="panel basis-panel" aria-labelledby="basis-title">
+            <div class="basis-heading">
+              <div>
+                <span class="eyebrow">03 / 频率贡献</span>
+                <h2 id="basis-title">每个基函数贡献了什么</h2>
+              </div>
+              <div class="basis-legend">
+                <span><i class="legend-swatch legend-negative"></i>负贡献</span>
+                <span><i class="legend-swatch legend-zero"></i>零</span>
+                <span><i class="legend-swatch legend-positive"></i>正贡献</span>
+              </div>
+            </div>
+            <div class="basis-layout">
+              <div class="basis-grid-wrap">
+                <div class="basis-grid" id="basisGrid" aria-label="64 个 DCT 基函数贡献"></div>
+                <p class="basis-hint">颜色深浅表示去量化系数幅度；点击查看二维余弦基函数。</p>
+              </div>
+              <div class="basis-detail">
+                <span class="eyebrow">基函数详情</span>
+                <canvas id="basisDetailCanvas" width="192" height="192" aria-label="所选基函数波形"></canvas>
+                <div class="basis-detail-title">
+                  <strong id="basisDetailTitle">F(0,0)</strong>
+                  <span class="freq-chip" id="basisFreqChip">DC</span>
+                </div>
+                <dl class="basis-stats">
+                  <div><dt>去量化值 G</dt><dd id="basisGValue">–</dd></div>
+                  <div><dt>能量占比</dt><dd id="basisShare">–</dd></div>
+                  <div><dt>量化步长 Q</dt><dd id="basisQValue">–</dd></div>
+                </dl>
+                <p class="basis-note" id="basisNote">DC 项决定该块的平均亮度。</p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <aside class="rail" aria-label="量化与误差">
+          <section class="panel quant-panel" aria-labelledby="quant-title">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">04 / 量化</span>
+                <h2 id="quant-title">独立量化表</h2>
+              </div>
+              <span class="mini-badge" id="quantStateBadge">JPEG 75</span>
+            </div>
+
+            <div class="quality-control" data-table-control="luma">
+              <div class="quality-label">
+                <span><i class="plane-dot luma-dot"></i>亮度 Y</span>
+                <output id="lumaQuality" for="lumaQualityRange">75</output>
+              </div>
+              <input id="lumaQualityRange" class="range" type="range" min="1" max="100" value="75" />
+              <div class="quality-meta"><span>标准亮度表</span><span id="lumaScale">×1.5</span></div>
+            </div>
+
+            <div class="quality-control" data-table-control="chroma">
+              <div class="quality-label">
+                <span><i class="plane-dot chroma-dot"></i>色度 Cb / Cr</span>
+                <output id="chromaQuality" for="chromaQualityRange">75</output>
+              </div>
+              <input id="chromaQualityRange" class="range" type="range" min="1" max="100" value="75" />
+              <div class="quality-meta"><span>共用色度表</span><span id="chromaScale">×1.5</span></div>
+            </div>
+
+            <div class="quant-actions">
+              <button class="button button-primary" id="unitStepBtn" type="button">两张表步长 = 1</button>
+              <button class="button" id="standardBtn" type="button">恢复 75</button>
+            </div>
+
+            <details class="table-editor" id="tableEditor">
+              <summary>
+                <span>查看 / 编辑 8×8 量化表</span>
+                <span class="summary-icon" aria-hidden="true">+</span>
+              </summary>
+              <div class="table-tabs" role="tablist" aria-label="编辑量化表">
+                <button class="table-tab is-active" data-table-tab="luma" type="button">亮度 Y</button>
+                <button class="table-tab" data-table-tab="chroma" type="button">色度 C</button>
+              </div>
+              <div class="quant-table-grid" id="quantTableGrid" aria-label="量化表数值"></div>
+              <p class="table-note">直接修改单元格会切换为自定义表；右键或使用键盘也可编辑。</p>
+            </details>
+          </section>
+
+          <section class="panel metrics-panel" aria-labelledby="metrics-title">
+            <div class="panel-heading compact-heading">
+              <div>
+                <span class="eyebrow">05 / 读数</span>
+                <h2 id="metrics-title">块指标</h2>
+              </div>
+              <span class="mini-badge" id="editBadge">自动</span>
+            </div>
+
+            <div class="metric-hero">
+              <div>
+                <strong id="nonzeroCount">0</strong>
+                <span>/ 64 非零量化系数</span>
+              </div>
+              <span class="metric-percent" id="nonzeroPercent">0%</span>
+            </div>
+            <div class="meter" aria-hidden="true"><span id="nonzeroMeter"></span></div>
+
+            <div class="metric-list">
+              <div><span>保留 DCT 能量</span><strong id="retainedEnergy">–</strong></div>
+              <div><span>块重建 MAE</span><strong id="selectedMae">–</strong></div>
+              <div><span>块最大像素误差</span><strong id="selectedMax">–</strong></div>
+              <div><span>全图 PSNR</span><strong id="globalPsnr">–</strong></div>
+            </div>
+
+            <div class="boundary-box">
+              <div class="boundary-head">
+                <span>块边界误差</span>
+                <strong id="boundaryError">–</strong>
+              </div>
+              <div class="boundary-detail">
+                <span>当前块四侧</span>
+                <span>全图平均 <b id="boundaryGlobal">–</b></span>
+              </div>
+              <div class="boundary-scale" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <p>比较重建图与原始图在块边界两侧的梯度差。上方为当前块四侧，下方为全图边界平均；数值越大，跨块阶跃越明显。</p>
+            </div>
+          </section>
+
+          <section class="panel energy-panel" aria-labelledby="energy-title">
+            <div class="panel-heading compact-heading">
+              <div>
+                <span class="eyebrow">06 / 频谱</span>
+                <h2 id="energy-title">能量分布</h2>
+              </div>
+              <span class="mini-badge">F²</span>
+            </div>
+            <div class="energy-legend">
+              <span><i class="energy-raw"></i>原始</span>
+              <span><i class="energy-retained"></i>量化后</span>
+            </div>
+            <div class="energy-bars" id="energyBars"></div>
+            <div class="energy-summary">
+              <span>高频能量占比</span>
+              <strong id="highFreqShare">–</strong>
+            </div>
+          </section>
+
+          <section class="panel q1-panel" aria-labelledby="q1-title">
+            <div class="q1-heading">
+              <div>
+                <span class="eyebrow">07 / 对照</span>
+                <h2 id="q1-title">Q = 1 也不是无损</h2>
+              </div>
+              <span class="warning-chip">有限精度</span>
+            </div>
+            <p class="q1-copy">
+              即使所有量化步长都是 1，F 仍会被 round 成整数，IDCT 后又经 8-bit 舍入与截断；这里也没有熵编码。下表统计整个所选平面。
+            </p>
+            <div class="q1-metrics">
+              <div><span>全平面 MAE</span><strong id="q1Mae">–</strong></div>
+              <div><span>最大误差</span><strong id="q1Max">–</strong></div>
+              <div><span>改变像素</span><strong id="q1Changed">–</strong></div>
+            </div>
+            <p class="q1-result-note" id="q1ResultNote">–</p>
+            <p class="q1-footnote">
+              <span class="mono">round(clamp(IDCT(round(F)) + 128)) · 16×16 blocks</span>
+            </p>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>JPEG DCT Quantization Bench</span>
+      <span>仅演示 8×8 DCT / 量化 / 重建，不是完整的 JPEG 编码器，也不宣称无损。</span>
+      <span class="mono" id="footerQuality">Y 75 · C 75</span>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="js/dct.js"></script>
+    <script src="js/patterns.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
