@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mp3audit"
+version = "0.1.0"
+description = "Structural MP3 frame, side-information, and bit-reservoir auditor"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "mp3audit contributors"}]
+dependencies = []
+
+[project.scripts]
+mp3audit = "mp3audit.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["mp3audit*"]
