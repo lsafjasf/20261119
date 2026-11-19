@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loop Seam Lab — 循环接缝实验台</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230c100e'/%3E%3Cpath d='M15 17h34v6H21v18h28v6H15z' fill='%23c8f169'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">LS</span>
+        <div>
+          <p class="eyebrow">AUDIO FORENSICS / 01</p>
+          <h1>循环接缝实验台</h1>
+        </div>
+      </div>
+      <div class="top-actions">
+        <label class="file-button">
+          <input id="file-input" type="file" accept="audio/*" />
+          载入音频
+        </label>
+        <button id="load-tone" class="ghost-button" type="button">相位错开周期音</button>
+        <button id="load-drums" class="ghost-button" type="button">末尾鼓点片段</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="studio" aria-label="循环分析与试听">
+        <div class="transport">
+          <button id="play-button" class="primary-button" type="button" aria-pressed="false">
+            <span class="play-icon">▶</span>
+            <span id="play-label">试听无缝循环</span>
+          </button>
+          <button id="audit-button" class="audit-button" type="button">连续试听 10 轮</button>
+          <div class="transport-readout" aria-live="polite">
+            <span id="round-readout">ROUND — / 10</span>
+            <span id="time-readout">00:00.000</span>
+          </div>
+          <div class="volume-control">
+            <label for="volume">监听</label>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="0.72" />
+          </div>
+        </div>
+
+        <div class="wave-card">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">WAVEFORM + BEAT GRID</p>
+              <h2 id="track-title">等待载入</h2>
+            </div>
+            <div class="legend">
+              <span><i class="swatch swatch-beat"></i>节拍</span>
+              <span><i class="swatch swatch-fade"></i>淡化</span>
+              <span><i class="swatch swatch-seam"></i>接缝</span>
+            </div>
+          </div>
+          <div class="wave-wrap">
+            <canvas id="wave-canvas" aria-label="波形、裁切接缝与节拍位置"></canvas>
+            <div id="wave-tooltip" class="wave-tooltip" hidden></div>
+          </div>
+          <p class="canvas-hint">拖动 IN / OUT 线移动接缝；拖动黄色边缘改变淡化宽度。</p>
+        </div>
+
+        <div class="analysis-grid">
+          <div class="spectrum-card">
+            <div class="card-heading compact">
+              <div>
+                <p class="eyebrow">SPECTRAL EDGE COMPARISON</p>
+                <h2>首尾频谱</h2>
+              </div>
+              <span id="spectral-delta" class="metric-chip">Δ —</span>
+            </div>
+            <div class="spectrum-wrap">
+              <canvas id="spectrum-canvas" aria-label="循环首尾频谱对比"></canvas>
+            </div>
+            <div class="spectrum-legend">
+              <span class="spectrum-start">IN <b id="spec-in-freq">—</b></span>
+              <span class="spectrum-end">OUT <b id="spec-out-freq">—</b></span>
+              <span class="axis-note">20 Hz → 20 kHz</span>
+            </div>
+          </div>
+
+          <div class="audit-card">
+            <div class="card-heading compact">
+              <div>
+                <p class="eyebrow">TEN-LAP SEAM AUDIT</p>
+                <h2>十轮接缝审计</h2>
+              </div>
+              <span id="audit-status" class="metric-chip warning">待测</span>
+            </div>
+            <div id="audit-bars" class="audit-bars" aria-label="十轮接缝跳变量"></div>
+            <div class="audit-footer">
+              <div>
+                <span>样本级跳变</span>
+                <strong id="seam-sample-jump">—</strong>
+              </div>
+              <div>
+                <span>整体 RMS 保持</span>
+                <strong id="rms-retention">—</strong>
+              </div>
+              <div>
+                <span>全局淡出</span>
+                <strong>无</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="inspector" aria-label="接缝诊断与控制">
+        <div class="inspector-section">
+          <div class="card-heading compact">
+            <div>
+              <p class="eyebrow">SEAM DIAGNOSIS</p>
+              <h2>断裂定位</h2>
+            </div>
+            <span id="risk-badge" class="risk-badge neutral">NO SIGNAL</span>
+          </div>
+          <p id="diagnosis-copy" class="diagnosis-copy">载入音频或生成测试片段后开始分析。</p>
+          <div class="metric-list">
+            <div><span>首 → 尾样本差</span><strong id="raw-delta">—</strong></div>
+            <div><span>接缝斜率跳变</span><strong id="slope-jump">—</strong></div>
+            <div><span>末尾瞬态</span><strong id="end-transient">—</strong></div>
+            <div><span>节拍 / BPM</span><strong id="beat-readout">—</strong></div>
+          </div>
+        </div>
+
+        <div class="inspector-section">
+          <div class="card-heading compact">
+            <div>
+              <p class="eyebrow">LOOP GEOMETRY</p>
+              <h2>裁切与淡化</h2>
+            </div>
+            <span id="loop-duration" class="metric-chip">—</span>
+          </div>
+          <div class="control-row">
+            <label for="start-range">IN</label>
+            <input id="start-range" type="range" min="0" max="1" step="0.001" disabled />
+            <output id="start-value">0.000 s</output>
+          </div>
+          <div class="control-row">
+            <label for="end-range">OUT</label>
+            <input id="end-range" type="range" min="0" max="1" step="0.001" disabled />
+            <output id="end-value">0.000 s</output>
+          </div>
+          <div class="control-row fade-control">
+            <label for="fade-range">FADE</label>
+            <input id="fade-range" type="range" min="5" max="1500" step="1" value="40" disabled />
+            <output id="fade-value">40 ms</output>
+          </div>
+          <div class="geometry-readout">
+            <span>实际循环长度 <b id="rendered-length">—</b></span>
+            <span>淡化占循环 <b id="fade-percent">—</b></span>
+          </div>
+          <div class="button-row">
+            <button id="zero-cross-button" class="ghost-button" type="button" disabled>吸附过零点</button>
+            <button id="beat-snap-button" class="ghost-button" type="button" disabled>吸附节拍</button>
+            <button id="export-button" class="ghost-button export-button" type="button" disabled>导出 WAV</button>
+          </div>
+        </div>
+
+        <div class="inspector-section compact-section">
+          <div class="card-heading compact">
+            <div>
+              <p class="eyebrow">BEAT POSITIONS</p>
+              <h2>节拍位置</h2>
+            </div>
+            <span id="beat-confidence" class="metric-chip">—</span>
+          </div>
+          <div id="beat-list" class="beat-list">
+            <span class="empty-state">尚无节拍数据</span>
+          </div>
+        </div>
+
+        <div class="inspector-section note-section">
+          <p class="eyebrow">METHOD NOTE</p>
+          <p>交叉淡化只作用于循环两端，不使用全局静音或整段衰减。十轮读数来自实际播放的同一个循环缓冲。</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>LOCAL PROCESSING · AUDIO NEVER LEAVES THIS BROWSER</span>
+      <span id="sample-rate-note">—</span>
+    </footer>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
