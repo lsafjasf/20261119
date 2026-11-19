@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>声门共振峰元音合成器</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>声门模型 · 多级共振峰元音合成器</h1>
+    <p class="sub">Rosenberg-C 周期激励 + 噪声气声，三级双极点共振峰级联 · 纯合成，无语音模型/录音</p>
+  </header>
+
+  <main>
+    <section class="panel controls">
+      <div class="row">
+        <button id="playBtn" class="primary">▶ 开始发声</button>
+        <span id="playState" class="state">已停止</span>
+      </div>
+
+      <h2>元音预设（平滑过渡，不重启音频）</h2>
+      <div class="presets">
+        <button data-preset="a">/a/</button>
+        <button data-preset="i">/i/</button>
+        <button data-preset="u">/u/</button>
+        <button data-preset="e">/e/</button>
+        <button data-preset="o">/o/</button>
+        <button data-preset="whisper_a">气声 /a/</button>
+      </div>
+
+      <h2>参数控制</h2>
+      <div id="sliders"></div>
+
+      <h2>导出实际产物</h2>
+      <div class="row">
+        <label>时长(秒) <input id="duration" type="number" value="2" min="0.5" max="10" step="0.5" /></label>
+        <button id="exportCurrent">导出当前稳态 WAV+轨迹</button>
+      </div>
+      <div class="row">
+        <button id="exportTransition">导出 /a/→/i/ 过渡</button>
+        <span id="exportResult" class="state"></span>
+      </div>
+    </section>
+
+    <section class="panel viz">
+      <canvas id="spectrum" width="760" height="300"></canvas>
+
+      <div class="meters">
+        <div class="meter">
+          <span>有声比例</span>
+          <div class="bar"><div id="voicedBar" class="fill voiced"></div></div>
+          <span id="voicedVal">–</span>
+        </div>
+        <div class="meter">
+          <span>气声比例</span>
+          <div class="bar"><div id="breathyBar" class="fill breathy"></div></div>
+          <span id="breathyVal">–</span>
+        </div>
+        <div class="meter hnr"><span>HNR</span><span id="hnrVal">–</span> dB</div>
+      </div>
+
+      <h2>共振峰：声明参数 vs 实测（LPC 极点，锚定声明值）</h2>
+      <table id="formantTable">
+        <thead>
+          <tr><th>共振峰</th><th>声明 F (Hz)</th><th>实测 F (Hz)</th><th>峰位误差</th>
+              <th>声明 BW (Hz)</th><th>实测 BW (Hz)</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="legend">
+        <span class="dot src"></span> 声源谱
+        <span class="dot out"></span> 滤波后谱
+        <span class="dot env"></span> LPC 包络
+      </p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
